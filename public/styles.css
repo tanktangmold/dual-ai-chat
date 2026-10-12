@@ -354,3 +354,10 @@ a { color: inherit; }
 .sub-h { margin-top: 12px !important; font-size: 13px !important; color: var(--ink-2); }
 .tool-row { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 12px; font-size: 13px; align-items: center; }
 .tool-label { color: var(--ink-2); }
+
+/* ---------- 窄屏顶栏：只留标题、话题和删除 ---------- */
+@media (max-width: 760px) {
+  .top-meta { display: none; }
+  #deleteConv { white-space: nowrap; }
+  .topic-edit { max-width: 7em; }
+}

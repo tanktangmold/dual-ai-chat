@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>比較レポート · この見積書の合計金額は正しく計算されていますか？単価と数量から確認してください。</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --claude: #eb6834; --codex: #2a78d6;
+  --claude-wash: rgba(235,104,52,0.10); --codex-wash: rgba(42,120,214,0.10);
+  --good: #006300; --sev-high: #d03b3b; --sev-mid: #fab219; --sev-low: #898781;
+  --best-wash: rgba(12,163,12,0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --claude: #d95926; --codex: #3987e5;
+    --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+    --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --claude: #d95926; --codex: #3987e5;
+  --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+  --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--page); color: var(--ink); }
+body { font: 15px/1.7 system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif; }
+:lang(ja) body { font-family: system-ui, -apple-system, "Segoe UI", "Yu Gothic UI", "Meiryo", "Hiragino Sans", sans-serif; }
+.report { max-width: 1080px; margin: 0 auto; padding: 28px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+.hero { padding: 4px 4px 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.hero h1 { font-size: 22px; line-height: 1.45; margin: 6px 0 8px; font-weight: 650; white-space: pre-wrap; overflow-wrap: anywhere; }
+.meta, .muted { color: var(--muted); font-size: 13px; font-weight: 400; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+.card h2 { font-size: 16px; margin: 0 0 12px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.card h3 { margin: 0 0 10px; font-size: 15px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+.who { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.who i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.who.claude i, .sw.claude { background: var(--claude); }
+.who.codex i, .sw.codex { background: var(--codex); }
+.verdict { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+@media (max-width: 760px) { .verdict { grid-template-columns: 1fr; } }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 650; font-size: 14px; border: 1px solid var(--border); background: var(--surface-2); }
+.badge.claude { background: var(--claude-wash); }
+.badge.codex { background: var(--codex-wash); }
+.verdict-text { font-size: 18px; font-weight: 600; margin: 12px 0 4px; line-height: 1.55; }
+.reason { margin: 0; color: var(--ink-2); }
+.tiles { display: flex; gap: 12px; }
+.tile { border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; min-width: 128px; background: var(--surface-2); }
+.tile.lead.claude { box-shadow: inset 0 -3px 0 var(--claude); }
+.tile.lead.codex { box-shadow: inset 0 -3px 0 var(--codex); }
+.tile-num { font-size: 34px; font-weight: 700; line-height: 1.1; margin-top: 4px; }
+.tile-num small { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 2px; }
+.legend { display: flex; gap: 18px; align-items: center; font-size: 13px; color: var(--ink-2); margin-bottom: 10px; flex-wrap: wrap; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend-note { color: var(--muted); margin-left: auto; }
+.chart { position: relative; --label: 72px; }
+:lang(en) .chart { --label: 110px; }
+.chart .grid { position: absolute; left: calc(var(--label) + 12px); right: 34px; top: 0; bottom: 22px; pointer-events: none; }
+.chart .grid i { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--grid); }
+.chart .grid i:first-child { border-left-color: var(--axis); }
+.row { display: grid; grid-template-columns: var(--label) minmax(0, 1fr); gap: 12px; align-items: center; padding: 7px 0; position: relative; }
+.row-label { font-size: 14px; color: var(--ink-2); text-align: right; }
+.row-bars { padding-right: 34px; display: flex; flex-direction: column; gap: 2px; }
+.bar-line { position: relative; height: 12px; display: flex; align-items: center; }
+.bar { height: 10px; border-radius: 0 4px 4px 0; position: relative; cursor: default; }
+.bar::after { content: ""; position: absolute; inset: -4px 0; }
+.bar.claude { background: var(--claude); }
+.bar.codex { background: var(--codex); }
+.bar-val { font-size: 12px; color: var(--ink-2); margin-left: 6px; font-variant-numeric: tabular-nums; }
+.row.axis { padding: 0; }
+.ticks { position: relative; height: 18px; display: block; margin-right: 34px; padding: 0; }
+.ticks span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.table-view { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+.table-view summary { cursor: pointer; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; }
+.table-view table { margin-top: 8px; max-width: 360px; }
+.table-view th, .table-view td { border-bottom: 1px solid var(--grid); padding: 4px 8px; text-align: left; font-variant-numeric: tabular-nums; }
+.table-view tr.sum th, .table-view tr.sum td { font-weight: 700; }
+ul { margin: 0; padding-left: 0; list-style: none; }
+ul li { position: relative; padding-left: 22px; margin: 6px 0; }
+ul.checks li::before { content: "✓"; position: absolute; left: 2px; color: var(--good); font-weight: 700; }
+ul.plus li::before { content: "+"; position: absolute; left: 4px; color: var(--good); font-weight: 700; }
+ul.minus li::before { content: "−"; position: absolute; left: 4px; color: var(--sev-high); font-weight: 700; }
+.pc-title { font-size: 12px; font-weight: 650; color: var(--muted); margin: 10px 0 2px; letter-spacing: .04em; }
+.side.claude { border-top: 3px solid var(--claude); }
+.side.codex { border-top: 3px solid var(--codex); }
+.empty { color: var(--muted); margin: 0; }
+.empty.ok { color: var(--good); }
+ul.issues li { padding-left: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.sev { font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; color: var(--ink); }
+.sev-high { background: color-mix(in srgb, var(--sev-high) 18%, transparent); }
+.sev-mid { background: color-mix(in srgb, var(--sev-mid) 26%, transparent); }
+.sev-low { background: color-mix(in srgb, var(--sev-low) 18%, transparent); }
+.issue-text { flex: 1 1 240px; }
+.table-wrap { overflow-x: auto; }
+table.diff th, table.diff td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--grid); font-size: 14px; }
+table.diff thead th { font-size: 13px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--axis); }
+table.diff tbody th { width: 16%; font-weight: 650; }
+table.diff td:nth-child(2) { background: var(--claude-wash); }
+table.diff td:nth-child(3) { background: var(--codex-wash); }
+.better { display: inline-block; font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
+.better.claude { background: var(--claude-wash); }
+.better.codex { background: var(--codex-wash); }
+.note { color: var(--ink-2); font-size: 13px; margin-top: 4px; }
+@media (max-width: 760px) {
+  table.diff thead { display: none; }
+  table.diff, table.diff tbody, table.diff tr, table.diff th, table.diff td { display: block; width: 100%; }
+  table.diff tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  table.diff td::before { content: attr(data-label); display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+}
+.best { border: 1px solid color-mix(in srgb, var(--good) 35%, var(--border)); background: linear-gradient(var(--best-wash), var(--best-wash)), var(--surface); }
+.tip-card p { margin: 0; }
+.raw-wrap summary { cursor: pointer; list-style: none; }
+.raw-wrap summary::-webkit-details-marker { display: none; }
+.raw-wrap summary h2 { margin: 0; }
+.raw-wrap summary h2::after { content: attr(data-closed); font-size: 13px; color: var(--muted); font-weight: 400; }
+.raw-wrap[open] summary h2::after { content: attr(data-open); }
+.raw-grid { margin-top: 14px; }
+.raw { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.raw.claude { border-top: 3px solid var(--claude); }
+.raw.codex { border-top: 3px solid var(--codex); }
+.raw header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.md { overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h1, .md h2, .md h3, .md h4 { font-size: 15px; margin: 14px 0 6px; display: block; }
+.md p { margin: 8px 0; }
+.md ul, .md ol { margin: 6px 0; padding-left: 22px; }
+.md ul { list-style: disc; }
+.md ul li, .md ol li { padding-left: 0; margin: 3px 0; }
+.md ul li::before { content: none; }
+.md code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 5px; font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; }
+.md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; overflow-x: auto; }
+.md pre code { background: none; border: 0; padding: 0; }
+.md blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid var(--axis); color: var(--ink-2); }
+.md .md-table { overflow-x: auto; margin: 8px 0; }
+.md table th, .md table td { border: 1px solid var(--grid); padding: 5px 10px; font-size: 14px; }
+.md table th { background: var(--surface-2); }
+.md a { color: var(--codex); }
+.md hr { border: 0; border-top: 1px solid var(--grid); margin: 12px 0; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding-top: 8px; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+@media (forced-colors: active) { .bar { border: 1px solid CanvasText; } }
+@media print { body { background: #fff; } .card { break-inside: avoid; } #tip { display: none; } }
+</style>
+</head>
+<body>
+<main class="report">
+  <header class="hero">
+    <div class="eyebrow">Claude × Codex 比較レポート</div>
+    <h1>この見積書の合計金額は正しく計算されていますか？単価と数量から確認してください。</h1>
+    <div class="meta">2026-10-12 23:28 · トピック：財務・税務 · 審査：Claude（匿名・順番ランダム） · Claude 所要 9.0秒 · Codex 所要 10.8秒 · 添付：見積書.pdf</div>
+  </header>
+
+  <section class="card verdict">
+    <div class="verdict-main">
+      <div class="badge claude">🏆 Claude の回答が優勢</div>
+      <p class="verdict-text">両回答とも計算は正しいが、検算過程と税込・税抜の具体的な影響額まで示したClaudeの方が実用的である。</p>
+      <p class="reason">Claudeは分解計算による検算過程を示しています。さらに、単価が税抜だった場合の正しい税込合計（364,320円）と消費税額（33,120円）も具体的に示しており、ユーザーが発行元へ確認する際にそのまま使えます。</p>
+    </div>
+    <div class="tiles">
+    <div class="tile claude lead">
+      <div class="tile-name"><span class="who claude"><i></i>Claude</span></div>
+      <div class="tile-num">45<small>/50</small></div>
+    </div>
+    <div class="tile codex">
+      <div class="tile-name"><span class="who codex"><i></i>Codex</span></div>
+      <div class="tile-num">35<small>/50</small></div>
+    </div></div>
+  </section>
+
+  <section class="card">
+    <h2>5項目の評価</h2>
+    
+    <div class="legend"><span class="legend-item"><i class="sw claude"></i>Claude</span><span class="legend-item"><i class="sw codex"></i>Codex</span><span class="legend-note">各10点満点</span></div>
+    <div class="chart" role="img" aria-label="5項目の評価の比較">
+      <div class="grid"><i style="left:0%"></i><i style="left:20%"></i><i style="left:40%"></i><i style="left:60%"></i><i style="left:80%"></i><i style="left:100%"></i></div>
+      <div class="row"><div class="row-label">正確性</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:100%" data-tip="Claude · 正確性: 10 / 10"></div><span class="bar-val">10</span></div><div class="bar-line"><div class="bar codex" style="width:90%" data-tip="Codex · 正確性: 9 / 10"></div><span class="bar-val">9</span></div></div></div><div class="row"><div class="row-label">網羅性</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:90%" data-tip="Claude · 網羅性: 9 / 10"></div><span class="bar-val">9</span></div><div class="bar-line"><div class="bar codex" style="width:60%" data-tip="Codex · 網羅性: 6 / 10"></div><span class="bar-val">6</span></div></div></div><div class="row"><div class="row-label">分かりやすさ</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:90%" data-tip="Claude · 分かりやすさ: 9 / 10"></div><span class="bar-val">9</span></div><div class="bar-line"><div class="bar codex" style="width:90%" data-tip="Codex · 分かりやすさ: 9 / 10"></div><span class="bar-val">9</span></div></div></div><div class="row"><div class="row-label">実用性</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:90%" data-tip="Claude · 実用性: 9 / 10"></div><span class="bar-val">9</span></div><div class="bar-line"><div class="bar codex" style="width:60%" data-tip="Codex · 実用性: 6 / 10"></div><span class="bar-val">6</span></div></div></div><div class="row"><div class="row-label">深さ</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · 深さ: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:50%" data-tip="Codex · 深さ: 5 / 10"></div><span class="bar-val">5</span></div></div></div>
+      <div class="row axis"><div class="row-label"></div><div class="row-bars ticks"><span style="left:0%">0</span><span style="left:20%">2</span><span style="left:40%">4</span><span style="left:60%">6</span><span style="left:80%">8</span><span style="left:100%">10</span></div></div>
+    </div>
+    <details class="table-view"><summary>点数表を見る</summary>
+      <table><thead><tr><th>項目</th><th>Claude</th><th>Codex</th></tr></thead>
+      <tbody><tr><th>正確性</th><td>10</td><td>9</td></tr><tr><th>網羅性</th><td>9</td><td>6</td></tr><tr><th>分かりやすさ</th><td>9</td><td>9</td></tr><tr><th>実用性</th><td>9</td><td>6</td></tr><tr><th>深さ</th><td>8</td><td>5</td></tr><tr class="sum"><th>合計</th><td>45</td><td>35</td></tr></tbody></table>
+    </details>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><h2>✓ 両者の共通点</h2><ul class="checks"><li>1,380円×240個＝331,200円で、計算は正しい</li><li>見積書の合計金額331,200円と一致している</li><li>単価が税込か税抜かは確認が必要である</li></ul></section>
+    <section class="card"><h2>⚠ 注意点</h2><p class="empty ok">✅ 審査役は明らかな事実誤りや危険な助言を見つけませんでした。</p></section>
+  </div>
+
+  <section class="card">
+    <h2>相違点の比較</h2>
+    <div class="table-wrap"><table class="diff"><thead><tr><th>観点</th><th><span class="who claude"><i></i>Claude</span></th><th><span class="who codex"><i></i>Codex</span></th><th>優勢・理由</th></tr></thead><tbody>
+    <tr>
+      <th scope="row">検算過程</th>
+      <td data-label="Claude">1,380×200と1,380×40に分けて計算し、その合計を示している。</td>
+      <td data-label="Codex">掛け算の結果のみを示している。</td>
+      <td data-label="判定"><span class="better claude">Claude が優勢</span><div class="note">検算の根拠が追いやすい。</div></td>
+    </tr>
+    <tr>
+      <th scope="row">税の扱い</th>
+      <td data-label="Claude">税込・税抜の両ケースを分け、税抜の場合は税込合計364,320円になると具体的に示している。</td>
+      <td data-label="Codex">単価が税込かどうか確認が必要だと一言触れるだけ。</td>
+      <td data-label="判定"><span class="better claude">Claude が優勢</span><div class="note">差額が具体的に分かるため、判断や問い合わせに役立つ。</div></td>
+    </tr>
+    <tr>
+      <th scope="row">簡潔さ</th>
+      <td data-label="Claude">表と見出しで構成されており、やや長い。</td>
+      <td data-label="Codex">短く結論が明確。</td>
+      <td data-label="判定"><span class="better codex">Codex が優勢</span><div class="note">結論だけ知りたい場合はCodexの方が早い。</div></td>
+    </tr></tbody></table></div>
+  </section>
+
+  <div class="grid2">
+    <div class="card side claude">
+      <h3><span class="who claude"><i></i>Claude</span></h3>
+      <div class="pc-title plus">良い点</div><ul class="plus"><li>分解計算で検算過程が明確</li><li>税抜の場合の正しい金額（364,320円）を具体的に提示</li><li>発行元への確認という具体的な行動を提案</li></ul>
+      <div class="pc-title minus">足りない点</div><ul class="minus"><li>Codexに比べてやや冗長</li></ul>
+    </div>
+    <div class="card side codex">
+      <h3><span class="who codex"><i></i>Codex</span></h3>
+      <div class="pc-title plus">良い点</div><ul class="plus"><li>結論が冒頭にあり簡潔</li><li>税込表示の確認点に触れている</li></ul>
+      <div class="pc-title minus">足りない点</div><ul class="minus"><li>税の問題が抽象的で、影響額を示していない</li><li>検算過程がない</li></ul>
+    </div></div>
+
+  <section class="card best">
+    <h2>★ 統合ベスト回答 <span class="muted">両者の良い点を合わせ、誤りを修正</span></h2>
+    <div class="md"><h2>結論：計算は合っています</h2>
+<p><strong>1,380円 × 240個 ＝ 331,200円</strong> で、見積書の合計金額 331,200円 と一致します。</p>
+<p>（検算：1,380×200＝276,000、1,380×40＝55,200、合計 331,200円）</p>
+<h3>注意：消費税の扱い</h3>
+<p>合計金額には「（税込）」とありますが、単価が税込か税抜かは書かれていません。</p>
+<ul><li><strong>単価が税込の場合</strong>：合計 331,200円（税込）で問題ありません。</li><li><strong>単価が税抜の場合</strong>：消費税10%を加えた税込合計は <strong>364,320円</strong>（うち消費税 33,120円）になるはずです。その場合、「税込」の表記が誤りです。</li></ul>
+<p>単価が税込か税抜かを発行元に確認することをおすすめします。</p></div>
+  </section>
+
+  <section class="card tip-card"><h2>💡 使い方のアドバイス</h2><p>Claudeを基本に採用してください。計算自体は正しいので、単価が税込か税抜かだけを発行元に確認すれば十分です。</p></section>
+
+  <section class="card">
+    <details class="raw-wrap"><summary><h2 data-open="閉じる ▴" data-closed="開く ▾">元の回答（並べて比較）</h2></summary>
+      <div class="grid2 raw-grid"><article class="raw claude"><header><span class="who claude"><i></i>Claude</span><span class="muted">所要 9.0秒</span></header><div class="md"><h2>結論：計算は合っています（240個 × 1,380円 = 331,200円）</h2>
+<h3>検算</h3>
+<div class="md-table"><table><thead><tr><th>項目</th><th>値</th></tr></thead><tbody><tr><td>数量</td><td>240 個</td></tr><tr><td>単価</td><td>1,380 円</td></tr><tr><td>計算</td><td>240 × 1,380 = <strong>331,200 円</strong></td></tr><tr><td>見積書の合計金額</td><td>331,200 円</td></tr></tbody></table></div>
+<p>計算過程：1,380 × 200 = 276,000、1,380 × 40 = 55,200 なので、276,000 + 55,200 = 331,200 円です。</p>
+<h3>確認したほうがよい点：消費税の扱い</h3>
+<p>合計金額には「（税込）」と書かれていますが、単価が税込か税抜かは書かれていません。</p>
+<ul><li><strong>単価 1,380 円が税込の場合</strong>：合計 331,200 円（税込）で問題ありません。</li><li><strong>単価 1,380 円が税抜の場合</strong>：消費税10%を加えると、税込合計は <strong>364,320 円</strong>（うち消費税 33,120 円）になるはずです。その場合、見積書の「税込」表記は誤りです。</li></ul>
+<p>単価が税抜か税込かを、発行元に確認することをおすすめします。</p></div></article><article class="raw codex"><header><span class="who codex"><i></i>Codex</span><span class="muted">所要 10.8秒</span></header><div class="md"><p><strong>はい、合計金額は正しく計算されています。</strong></p>
+<p>単価 <strong>1,380円 × 数量240個 ＝ 331,200円</strong></p>
+<p>見積書に記載された合計金額 <strong>331,200円（税込）</strong> と一致します。なお、税込表示が正しいかは、単価1,380円が税込かどうかの確認が必要です。</p></div></article></div>
+    </details>
+  </section>
+
+  <footer>2026-10-12 23:29 作成 · デュアルAIチャット · 評価は AI 審査役によるもので参考情報です</footer>
+</main>
+<div id="tip" role="tooltip" hidden></div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search).get('theme');
+  if (q === 'dark' || q === 'light') document.documentElement.setAttribute('data-theme', q);
+  var tip = document.getElementById('tip');
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { tip.textContent = el.getAttribute('data-tip'); tip.hidden = false; });
+    el.addEventListener('mousemove', function (e) { tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; });
+    el.addEventListener('mouseleave', function () { tip.hidden = true; });
+  });
+  function post() {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: 'dual-report-height', path: location.pathname, height: document.documentElement.scrollHeight }, '*');
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(post).observe(document.body);
+  document.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', post); });
+  window.addEventListener('load', post);
+  post();
+})();</script>
+</body>
+</html>

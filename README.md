@@ -4,6 +4,8 @@
 
 [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
+**[▶ Try the live demo](https://tanktangmold.github.io/dual-ai-chat/)** — real recorded answers replayed in your browser, no install needed.
+
 ![Dual AI Chat — both answers side by side with an automatic comparison](docs/screenshot-chat.png)
 
 Dual AI Chat is a small local web app for Windows. It drives the official **Claude Code** and **Codex** command-line tools that are signed in on your PC, so there is no API key and no per-use billing — usage counts toward your Claude and ChatGPT plans. Everything (chats, attachments, reports) stays on your machine.
@@ -63,6 +65,22 @@ npm run pack              # build dist/dual-ai-chat-v<version>.zip for sharing
 ```
 
 macOS and Linux: the server is plain Node.js and should work with `node server.mjs --open` when `claude` and `codex` are on your `PATH`, but only Windows is tested and the one-click installer is Windows-only.
+
+## Live demo (GitHub Pages)
+
+The [live demo](https://tanktangmold.github.io/dual-ai-chat/) is the real UI with a small in-browser backend (`demo/backend.mjs`) that replays conversations recorded from real runs (`demo/data.json`, reports and attachments in `demo/`). No AI is called.
+
+```bash
+npm run pages:serve    # preview at http://127.0.0.1:8798/dual-ai-chat/
+npm run pages:deploy   # build and push to the gh-pages branch
+```
+
+To refresh the recordings, run a separate instance with its own data folder (never your real `data/`), ask the sample questions, then export:
+
+```bash
+DUAL_CHAT_PORT=8797 DUAL_CHAT_DATA=/tmp/demo-data node server.mjs
+node scripts/export-demo.mjs /tmp/demo-data
+```
 
 ## How it works
 

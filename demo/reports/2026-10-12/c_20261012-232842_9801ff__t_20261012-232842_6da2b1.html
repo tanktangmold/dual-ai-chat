@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparison report · Should I learn Python or JavaScript as m</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --claude: #eb6834; --codex: #2a78d6;
+  --claude-wash: rgba(235,104,52,0.10); --codex-wash: rgba(42,120,214,0.10);
+  --good: #006300; --sev-high: #d03b3b; --sev-mid: #fab219; --sev-low: #898781;
+  --best-wash: rgba(12,163,12,0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --claude: #d95926; --codex: #3987e5;
+    --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+    --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --claude: #d95926; --codex: #3987e5;
+  --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+  --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--page); color: var(--ink); }
+body { font: 15px/1.7 system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif; }
+:lang(ja) body { font-family: system-ui, -apple-system, "Segoe UI", "Yu Gothic UI", "Meiryo", "Hiragino Sans", sans-serif; }
+.report { max-width: 1080px; margin: 0 auto; padding: 28px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+.hero { padding: 4px 4px 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.hero h1 { font-size: 22px; line-height: 1.45; margin: 6px 0 8px; font-weight: 650; white-space: pre-wrap; overflow-wrap: anywhere; }
+.meta, .muted { color: var(--muted); font-size: 13px; font-weight: 400; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+.card h2 { font-size: 16px; margin: 0 0 12px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.card h3 { margin: 0 0 10px; font-size: 15px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+.who { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.who i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.who.claude i, .sw.claude { background: var(--claude); }
+.who.codex i, .sw.codex { background: var(--codex); }
+.verdict { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+@media (max-width: 760px) { .verdict { grid-template-columns: 1fr; } }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 650; font-size: 14px; border: 1px solid var(--border); background: var(--surface-2); }
+.badge.claude { background: var(--claude-wash); }
+.badge.codex { background: var(--codex-wash); }
+.verdict-text { font-size: 18px; font-weight: 600; margin: 12px 0 4px; line-height: 1.55; }
+.reason { margin: 0; color: var(--ink-2); }
+.tiles { display: flex; gap: 12px; }
+.tile { border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; min-width: 128px; background: var(--surface-2); }
+.tile.lead.claude { box-shadow: inset 0 -3px 0 var(--claude); }
+.tile.lead.codex { box-shadow: inset 0 -3px 0 var(--codex); }
+.tile-num { font-size: 34px; font-weight: 700; line-height: 1.1; margin-top: 4px; }
+.tile-num small { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 2px; }
+.legend { display: flex; gap: 18px; align-items: center; font-size: 13px; color: var(--ink-2); margin-bottom: 10px; flex-wrap: wrap; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend-note { color: var(--muted); margin-left: auto; }
+.chart { position: relative; --label: 72px; }
+:lang(en) .chart { --label: 110px; }
+.chart .grid { position: absolute; left: calc(var(--label) + 12px); right: 34px; top: 0; bottom: 22px; pointer-events: none; }
+.chart .grid i { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--grid); }
+.chart .grid i:first-child { border-left-color: var(--axis); }
+.row { display: grid; grid-template-columns: var(--label) minmax(0, 1fr); gap: 12px; align-items: center; padding: 7px 0; position: relative; }
+.row-label { font-size: 14px; color: var(--ink-2); text-align: right; }
+.row-bars { padding-right: 34px; display: flex; flex-direction: column; gap: 2px; }
+.bar-line { position: relative; height: 12px; display: flex; align-items: center; }
+.bar { height: 10px; border-radius: 0 4px 4px 0; position: relative; cursor: default; }
+.bar::after { content: ""; position: absolute; inset: -4px 0; }
+.bar.claude { background: var(--claude); }
+.bar.codex { background: var(--codex); }
+.bar-val { font-size: 12px; color: var(--ink-2); margin-left: 6px; font-variant-numeric: tabular-nums; }
+.row.axis { padding: 0; }
+.ticks { position: relative; height: 18px; display: block; margin-right: 34px; padding: 0; }
+.ticks span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.table-view { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+.table-view summary { cursor: pointer; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; }
+.table-view table { margin-top: 8px; max-width: 360px; }
+.table-view th, .table-view td { border-bottom: 1px solid var(--grid); padding: 4px 8px; text-align: left; font-variant-numeric: tabular-nums; }
+.table-view tr.sum th, .table-view tr.sum td { font-weight: 700; }
+ul { margin: 0; padding-left: 0; list-style: none; }
+ul li { position: relative; padding-left: 22px; margin: 6px 0; }
+ul.checks li::before { content: "✓"; position: absolute; left: 2px; color: var(--good); font-weight: 700; }
+ul.plus li::before { content: "+"; position: absolute; left: 4px; color: var(--good); font-weight: 700; }
+ul.minus li::before { content: "−"; position: absolute; left: 4px; color: var(--sev-high); font-weight: 700; }
+.pc-title { font-size: 12px; font-weight: 650; color: var(--muted); margin: 10px 0 2px; letter-spacing: .04em; }
+.side.claude { border-top: 3px solid var(--claude); }
+.side.codex { border-top: 3px solid var(--codex); }
+.empty { color: var(--muted); margin: 0; }
+.empty.ok { color: var(--good); }
+ul.issues li { padding-left: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.sev { font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; color: var(--ink); }
+.sev-high { background: color-mix(in srgb, var(--sev-high) 18%, transparent); }
+.sev-mid { background: color-mix(in srgb, var(--sev-mid) 26%, transparent); }
+.sev-low { background: color-mix(in srgb, var(--sev-low) 18%, transparent); }
+.issue-text { flex: 1 1 240px; }
+.table-wrap { overflow-x: auto; }
+table.diff th, table.diff td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--grid); font-size: 14px; }
+table.diff thead th { font-size: 13px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--axis); }
+table.diff tbody th { width: 16%; font-weight: 650; }
+table.diff td:nth-child(2) { background: var(--claude-wash); }
+table.diff td:nth-child(3) { background: var(--codex-wash); }
+.better { display: inline-block; font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
+.better.claude { background: var(--claude-wash); }
+.better.codex { background: var(--codex-wash); }
+.note { color: var(--ink-2); font-size: 13px; margin-top: 4px; }
+@media (max-width: 760px) {
+  table.diff thead { display: none; }
+  table.diff, table.diff tbody, table.diff tr, table.diff th, table.diff td { display: block; width: 100%; }
+  table.diff tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  table.diff td::before { content: attr(data-label); display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+}
+.best { border: 1px solid color-mix(in srgb, var(--good) 35%, var(--border)); background: linear-gradient(var(--best-wash), var(--best-wash)), var(--surface); }
+.tip-card p { margin: 0; }
+.raw-wrap summary { cursor: pointer; list-style: none; }
+.raw-wrap summary::-webkit-details-marker { display: none; }
+.raw-wrap summary h2 { margin: 0; }
+.raw-wrap summary h2::after { content: attr(data-closed); font-size: 13px; color: var(--muted); font-weight: 400; }
+.raw-wrap[open] summary h2::after { content: attr(data-open); }
+.raw-grid { margin-top: 14px; }
+.raw { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.raw.claude { border-top: 3px solid var(--claude); }
+.raw.codex { border-top: 3px solid var(--codex); }
+.raw header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.md { overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h1, .md h2, .md h3, .md h4 { font-size: 15px; margin: 14px 0 6px; display: block; }
+.md p { margin: 8px 0; }
+.md ul, .md ol { margin: 6px 0; padding-left: 22px; }
+.md ul { list-style: disc; }
+.md ul li, .md ol li { padding-left: 0; margin: 3px 0; }
+.md ul li::before { content: none; }
+.md code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 5px; font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; }
+.md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; overflow-x: auto; }
+.md pre code { background: none; border: 0; padding: 0; }
+.md blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid var(--axis); color: var(--ink-2); }
+.md .md-table { overflow-x: auto; margin: 8px 0; }
+.md table th, .md table td { border: 1px solid var(--grid); padding: 5px 10px; font-size: 14px; }
+.md table th { background: var(--surface-2); }
+.md a { color: var(--codex); }
+.md hr { border: 0; border-top: 1px solid var(--grid); margin: 12px 0; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding-top: 8px; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+@media (forced-colors: active) { .bar { border: 1px solid CanvasText; } }
+@media print { body { background: #fff; } .card { break-inside: avoid; } #tip { display: none; } }
+</style>
+</head>
+<body>
+<main class="report">
+  <header class="hero">
+    <div class="eyebrow">Claude × Codex comparison report</div>
+    <h1>Should I learn Python or JavaScript as my first programming language? Give a short answer with reasons.</h1>
+    <div class="meta">2026-10-12 23:28 · Topic: Programming · Judge: Claude (blind review, random order) · Claude took 8.0s · Codex took 12.7s</div>
+  </header>
+
+  <section class="card verdict">
+    <div class="verdict-main">
+      <div class="badge codex">🏆 Codex gave the better answer</div>
+      <p class="verdict-text">Both answers give the same correct advice. Codex better fits the user&#39;s request for a short answer, while Claude gives more depth but is longer than the user asked for.</p>
+      <p class="reason">The user asked for a short answer with reasons. Codex gives the same recommendation and the key reasons in a few lines. Claude adds useful detail, but its length goes against what the user asked for.</p>
+    </div>
+    <div class="tiles">
+    <div class="tile claude">
+      <div class="tile-name"><span class="who claude"><i></i>Claude</span></div>
+      <div class="tile-num">41<small>/50</small></div>
+    </div>
+    <div class="tile codex lead">
+      <div class="tile-name"><span class="who codex"><i></i>Codex</span></div>
+      <div class="tile-num">39<small>/50</small></div>
+    </div></div>
+  </section>
+
+  <section class="card">
+    <h2>Scores on 5 criteria</h2>
+    
+    <div class="legend"><span class="legend-item"><i class="sw claude"></i>Claude</span><span class="legend-item"><i class="sw codex"></i>Codex</span><span class="legend-note">Out of 10</span></div>
+    <div class="chart" role="img" aria-label="Score comparison on five criteria">
+      <div class="grid"><i style="left:0%"></i><i style="left:20%"></i><i style="left:40%"></i><i style="left:60%"></i><i style="left:80%"></i><i style="left:100%"></i></div>
+      <div class="row"><div class="row-label">Accuracy</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · Accuracy: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:90%" data-tip="Codex · Accuracy: 9 / 10"></div><span class="bar-val">9</span></div></div></div><div class="row"><div class="row-label">Completeness</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:90%" data-tip="Claude · Completeness: 9 / 10"></div><span class="bar-val">9</span></div><div class="bar-line"><div class="bar codex" style="width:70%" data-tip="Codex · Completeness: 7 / 10"></div><span class="bar-val">7</span></div></div></div><div class="row"><div class="row-label">Clarity</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · Clarity: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:90%" data-tip="Codex · Clarity: 9 / 10"></div><span class="bar-val">9</span></div></div></div><div class="row"><div class="row-label">Practicality</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · Practicality: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:80%" data-tip="Codex · Practicality: 8 / 10"></div><span class="bar-val">8</span></div></div></div><div class="row"><div class="row-label">Depth</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · Depth: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:60%" data-tip="Codex · Depth: 6 / 10"></div><span class="bar-val">6</span></div></div></div>
+      <div class="row axis"><div class="row-label"></div><div class="row-bars ticks"><span style="left:0%">0</span><span style="left:20%">2</span><span style="left:40%">4</span><span style="left:60%">6</span><span style="left:80%">8</span><span style="left:100%">10</span></div></div>
+    </div>
+    <details class="table-view"><summary>Show score table</summary>
+      <table><thead><tr><th>Criterion</th><th>Claude</th><th>Codex</th></tr></thead>
+      <tbody><tr><th>Accuracy</th><td>8</td><td>9</td></tr><tr><th>Completeness</th><td>9</td><td>7</td></tr><tr><th>Clarity</th><td>8</td><td>9</td></tr><tr><th>Practicality</th><td>8</td><td>8</td></tr><tr><th>Depth</th><td>8</td><td>6</td></tr><tr class="sum"><th>Total</th><td>41</td><td>39</td></tr></tbody></table>
+    </details>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><h2>✓ Where they agree</h2><ul class="checks"><li>Start with Python unless your main goal is web development.</li><li>Python&#39;s syntax is simpler and easier to read.</li><li>JavaScript is the best choice for interactive websites and gives you quick visual feedback.</li><li>If you&#39;re unsure, pick Python.</li><li>Core programming concepts carry over to the next language you learn.</li></ul></section>
+    <section class="card"><h2>⚠ Watch out</h2><ul class="issues"><li><span class="sev sev-low">ℹ️ Low</span><span class="who claude"><i></i>Claude</span><span class="issue-text">Saying JavaScript is the &#39;only language that runs natively in the browser&#39; is slightly overstated, because WebAssembly also runs in browsers. In practice, JavaScript is still the main browser language.</span></li></ul></section>
+  </div>
+
+  <section class="card">
+    <h2>Where they differ</h2>
+    <div class="table-wrap"><table class="diff"><thead><tr><th>Aspect</th><th><span class="who claude"><i></i>Claude</span></th><th><span class="who codex"><i></i>Codex</span></th><th>Better · why</th></tr></thead><tbody>
+    <tr>
+      <th scope="row">Length</th>
+      <td data-label="Claude">A sectioned answer with headings and many bullet points.</td>
+      <td data-label="Codex">Very concise: four short lines.</td>
+      <td data-label="Verdict"><span class="better codex">Codex is better</span><div class="note">The user explicitly asked for a short answer.</div></td>
+    </tr>
+    <tr>
+      <th scope="row">JavaScript pitfalls</th>
+      <td data-label="Claude">Names JavaScript quirks such as type coercion, how `this` works, and asynchronous code.</td>
+      <td data-label="Codex">Not mentioned.</td>
+      <td data-label="Verdict"><span class="better claude">Claude is better</span><div class="note">This is a concrete reason why JavaScript is harder for beginners.</div></td>
+    </tr>
+    <tr>
+      <th scope="row">Career angle</th>
+      <td data-label="Claude">Mentions front-end and full-stack jobs, and Node.js for running JavaScript on servers.</td>
+      <td data-label="Codex">Not mentioned.</td>
+      <td data-label="Verdict"><span class="better claude">Claude is better</span><div class="note">Useful if the user&#39;s goal is a job.</div></td>
+    </tr></tbody></table></div>
+  </section>
+
+  <div class="grid2">
+    <div class="card side claude">
+      <h3><span class="who claude"><i></i>Claude</span></h3>
+      <div class="pc-title plus">Strengths</div><ul class="plus"><li>Concrete JavaScript example (`&quot;5&quot; + 1`)</li><li>Clear guidance on when to choose JavaScript instead</li><li>Mentions career paths</li></ul>
+      <div class="pc-title minus">Weaknesses</div><ul class="minus"><li>Longer than the user asked for</li><li>Some content repeats</li></ul>
+    </div>
+    <div class="card side codex">
+      <h3><span class="who codex"><i></i>Codex</span></h3>
+      <div class="pc-title plus">Strengths</div><ul class="plus"><li>Matches the request for a short answer</li><li>Gives a clear default choice</li></ul>
+      <div class="pc-title minus">Weaknesses</div><ul class="minus"><li>Few concrete reasons</li><li>No mention of careers</li></ul>
+    </div></div>
+
+  <section class="card best">
+    <h2>★ Combined best answer <span class="muted">Merges the strengths of both and fixes their mistakes</span></h2>
+    <div class="md"><p><strong>Start with Python, unless your main goal is building websites.</strong></p>
+<ul><li><strong>Python:</strong> The syntax is clean and readable, and it has fewer beginner traps than JavaScript (for example, in JavaScript <code>&quot;5&quot; + 1</code> gives <code>&quot;51&quot;</code>). It&#39;s widely used for automation, data analysis, AI, and backend work.</li><li><strong>JavaScript:</strong> Pick it if you want to build websites or aim for front-end or full-stack jobs. It&#39;s the main language that runs in the browser, so you see visual results right away.</li></ul>
+<p>If you&#39;re unsure, choose Python. Core concepts like variables, loops, and functions carry over, so learning JavaScript later will be much easier.</p></div>
+  </section>
+
+  <section class="card tip-card"><h2>💡 How to use this</h2><p>Decide based on what you want to build: choose Python by default and JavaScript if you&#39;re focused on the web. Either way, focus on learning the fundamentals rather than worrying about which language is &quot;right.&quot;</p></section>
+
+  <section class="card">
+    <details class="raw-wrap"><summary><h2 data-open="Hide ▴" data-closed="Show ▾">Original answers (side by side)</h2></summary>
+      <div class="grid2 raw-grid"><article class="raw claude"><header><span class="who claude"><i></i>Claude</span><span class="muted">Took 8.0s</span></header><div class="md"><p><strong>Start with Python</strong>, unless your main goal is building websites.</p>
+<h2>Why Python</h2>
+<ul><li><strong>Easier to read and write.</strong> The syntax is clean and close to plain English, so you can focus on programming concepts instead of punctuation.</li><li><strong>Fewer surprises.</strong> JavaScript has quirks (type coercion like <code>&quot;5&quot; + 1 === &quot;51&quot;</code>, <code>this</code> binding, async behavior) that confuse beginners.</li><li><strong>Broad use.</strong> It covers automation, data analysis, AI/ML, scripting, and backend work, which makes it very useful for practical tasks.</li><li><strong>Great learning resources.</strong> Many beginner courses, books, and university intro classes use it.</li></ul>
+<h2>When to pick JavaScript instead</h2>
+<ul><li><strong>You want to build websites or web apps.</strong> JavaScript is the only language that runs natively in the browser.</li><li><strong>You want instant visual feedback.</strong> You can change a webpage and see the result right away, which is very motivating.</li><li><strong>You&#39;re aiming for front-end or full-stack jobs.</strong> With Node.js, JS also runs on servers.</li></ul>
+<h2>Bottom line</h2>
+<p>Choose based on what you want to build. If you&#39;re unsure, pick <strong>Python</strong>. The core concepts (variables, loops, functions, data structures) carry over, so learning a second language later is much easier.</p></div></article><article class="raw codex"><header><span class="who codex"><i></i>Codex</span><span class="muted">Took 12.7s</span></header><div class="md"><p><strong>Start with Python unless your main goal is building websites.</strong></p>
+<ul><li><strong>Python</strong> has simpler, readable syntax, so you can focus on programming fundamentals. It’s useful for automation, data analysis, and AI.</li><li><strong>JavaScript</strong> is the better first choice for interactive websites because it runs directly in browsers and gives you immediate visual results.</li></ul>
+<p>If you’re undecided, choose <strong>Python</strong>. The fundamentals you learn will transfer to JavaScript later.</p></div></article></div>
+    </details>
+  </section>
+
+  <footer>Generated 2026-10-12 23:29 · Dual AI Chat · Scores come from an AI judge and are for reference only</footer>
+</main>
+<div id="tip" role="tooltip" hidden></div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search).get('theme');
+  if (q === 'dark' || q === 'light') document.documentElement.setAttribute('data-theme', q);
+  var tip = document.getElementById('tip');
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { tip.textContent = el.getAttribute('data-tip'); tip.hidden = false; });
+    el.addEventListener('mousemove', function (e) { tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; });
+    el.addEventListener('mouseleave', function () { tip.hidden = true; });
+  });
+  function post() {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: 'dual-report-height', path: location.pathname, height: document.documentElement.scrollHeight }, '*');
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(post).observe(document.body);
+  document.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', post); });
+  window.addEventListener('load', post);
+  post();
+})();</script>
+</body>
+</html>

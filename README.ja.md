@@ -4,6 +4,8 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
+**[▶ オンラインデモ](https://tanktangmold.github.io/dual-ai-chat/)**：実際に録画した回答をブラウザで再生します。インストール不要。
+
 ![デュアルAIチャット：2つの回答を並べ、下に自動比較](docs/screenshot-chat.png)
 
 Windows で動くローカルの小さな Web アプリです。PC でログイン済みの公式 **Claude Code** と **Codex** のコマンドラインツールを使うので、API キーも従量課金も不要で、利用分は Claude / ChatGPT のプランにカウントされます。会話・添付ファイル・レポートはすべてあなたの PC の中だけに保存されます。

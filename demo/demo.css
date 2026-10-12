@@ -1,0 +1,28 @@
+/* 在线体验版专用：顶部提示条 + 示例问题按钮 */
+:root { --demo-bar: 44px; }
+body.demo .app { height: calc(100vh - var(--demo-bar)); height: calc(100dvh - var(--demo-bar)); margin-top: var(--demo-bar); }
+.demo-banner {
+  position: fixed; inset: 0 0 auto 0; height: var(--demo-bar); z-index: 45;
+  display: flex; align-items: center; gap: 10px; padding: 0 16px;
+  background: linear-gradient(90deg, var(--claude-wash), var(--codex-wash)), var(--surface);
+  border-bottom: 1px solid var(--border); font-size: 13px; color: var(--ink-2);
+}
+.demo-tag { font-weight: 800; font-size: 11px; letter-spacing: .08em; padding: 2px 8px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); flex: none; }
+.demo-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.demo-btn { flex: none; text-decoration: none; font-weight: 650; padding: 4px 12px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); }
+.demo-btn:hover { opacity: .88; }
+.demo-link { flex: none; color: var(--ink-2); }
+.demo-samples { display: flex; gap: 6px; align-items: center; overflow-x: auto; margin-bottom: 8px; scrollbar-width: thin; }
+.demo-label { flex: none; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.demo-chip {
+  flex: none; max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border: 1px dashed var(--line-2); background: var(--page); color: var(--ink); border-radius: 999px;
+  padding: 4px 12px; font-size: 12.5px; cursor: pointer;
+}
+.demo-chip:hover { border-style: solid; background: var(--surface-2); }
+@media (max-width: 760px) {
+  :root { --demo-bar: 40px; }
+  .demo-text { font-size: 12px; }
+  .demo-link { display: none; }
+  body.demo .sidebar { top: var(--demo-bar); }
+}
