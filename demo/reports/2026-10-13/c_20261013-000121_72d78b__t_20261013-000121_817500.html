@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparison report · Please analyze 3 US stocks that rose 30%</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --claude: #eb6834; --codex: #2a78d6;
+  --claude-wash: rgba(235,104,52,0.10); --codex-wash: rgba(42,120,214,0.10);
+  --good: #006300; --sev-high: #d03b3b; --sev-mid: #fab219; --sev-low: #898781;
+  --best-wash: rgba(12,163,12,0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --claude: #d95926; --codex: #3987e5;
+    --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+    --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --claude: #d95926; --codex: #3987e5;
+  --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+  --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--page); color: var(--ink); }
+body { font: 15px/1.7 system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif; }
+:lang(ja) body { font-family: system-ui, -apple-system, "Segoe UI", "Yu Gothic UI", "Meiryo", "Hiragino Sans", sans-serif; }
+.report { max-width: 1080px; margin: 0 auto; padding: 28px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+.hero { padding: 4px 4px 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.hero h1 { font-size: 22px; line-height: 1.45; margin: 6px 0 8px; font-weight: 650; white-space: pre-wrap; overflow-wrap: anywhere; }
+.meta, .muted { color: var(--muted); font-size: 13px; font-weight: 400; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+.card h2 { font-size: 16px; margin: 0 0 12px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.card h3 { margin: 0 0 10px; font-size: 15px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+.who { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.who i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.who.claude i, .sw.claude { background: var(--claude); }
+.who.codex i, .sw.codex { background: var(--codex); }
+.verdict { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+@media (max-width: 760px) { .verdict { grid-template-columns: 1fr; } }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 650; font-size: 14px; border: 1px solid var(--border); background: var(--surface-2); }
+.badge.claude { background: var(--claude-wash); }
+.badge.codex { background: var(--codex-wash); }
+.verdict-text { font-size: 18px; font-weight: 600; margin: 12px 0 4px; line-height: 1.55; }
+.reason { margin: 0; color: var(--ink-2); }
+.tiles { display: flex; gap: 12px; }
+.tile { border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; min-width: 128px; background: var(--surface-2); }
+.tile.lead.claude { box-shadow: inset 0 -3px 0 var(--claude); }
+.tile.lead.codex { box-shadow: inset 0 -3px 0 var(--codex); }
+.tile-num { font-size: 34px; font-weight: 700; line-height: 1.1; margin-top: 4px; }
+.tile-num small { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 2px; }
+.legend { display: flex; gap: 18px; align-items: center; font-size: 13px; color: var(--ink-2); margin-bottom: 10px; flex-wrap: wrap; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend-note { color: var(--muted); margin-left: auto; }
+.chart { position: relative; --label: 72px; }
+:lang(en) .chart { --label: 110px; }
+.chart .grid { position: absolute; left: calc(var(--label) + 12px); right: 34px; top: 0; bottom: 22px; pointer-events: none; }
+.chart .grid i { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--grid); }
+.chart .grid i:first-child { border-left-color: var(--axis); }
+.row { display: grid; grid-template-columns: var(--label) minmax(0, 1fr); gap: 12px; align-items: center; padding: 7px 0; position: relative; }
+.row-label { font-size: 14px; color: var(--ink-2); text-align: right; }
+.row-bars { padding-right: 34px; display: flex; flex-direction: column; gap: 2px; }
+.bar-line { position: relative; height: 12px; display: flex; align-items: center; }
+.bar { height: 10px; border-radius: 0 4px 4px 0; position: relative; cursor: default; }
+.bar::after { content: ""; position: absolute; inset: -4px 0; }
+.bar.claude { background: var(--claude); }
+.bar.codex { background: var(--codex); }
+.bar-val { font-size: 12px; color: var(--ink-2); margin-left: 6px; font-variant-numeric: tabular-nums; }
+.row.axis { padding: 0; }
+.ticks { position: relative; height: 18px; display: block; margin-right: 34px; padding: 0; }
+.ticks span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.table-view { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+.table-view summary { cursor: pointer; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; }
+.table-view table { margin-top: 8px; max-width: 360px; }
+.table-view th, .table-view td { border-bottom: 1px solid var(--grid); padding: 4px 8px; text-align: left; font-variant-numeric: tabular-nums; }
+.table-view tr.sum th, .table-view tr.sum td { font-weight: 700; }
+ul { margin: 0; padding-left: 0; list-style: none; }
+ul li { position: relative; padding-left: 22px; margin: 6px 0; }
+ul.checks li::before { content: "✓"; position: absolute; left: 2px; color: var(--good); font-weight: 700; }
+ul.plus li::before { content: "+"; position: absolute; left: 4px; color: var(--good); font-weight: 700; }
+ul.minus li::before { content: "−"; position: absolute; left: 4px; color: var(--sev-high); font-weight: 700; }
+.pc-title { font-size: 12px; font-weight: 650; color: var(--muted); margin: 10px 0 2px; letter-spacing: .04em; }
+.side.claude { border-top: 3px solid var(--claude); }
+.side.codex { border-top: 3px solid var(--codex); }
+.empty { color: var(--muted); margin: 0; }
+.empty.ok { color: var(--good); }
+ul.issues li { padding-left: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.sev { font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; color: var(--ink); }
+.sev-high { background: color-mix(in srgb, var(--sev-high) 18%, transparent); }
+.sev-mid { background: color-mix(in srgb, var(--sev-mid) 26%, transparent); }
+.sev-low { background: color-mix(in srgb, var(--sev-low) 18%, transparent); }
+.issue-text { flex: 1 1 240px; }
+.table-wrap { overflow-x: auto; }
+table.diff th, table.diff td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--grid); font-size: 14px; }
+table.diff thead th { font-size: 13px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--axis); }
+table.diff tbody th { width: 16%; font-weight: 650; }
+table.diff td:nth-child(2) { background: var(--claude-wash); }
+table.diff td:nth-child(3) { background: var(--codex-wash); }
+.better { display: inline-block; font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
+.better.claude { background: var(--claude-wash); }
+.better.codex { background: var(--codex-wash); }
+.note { color: var(--ink-2); font-size: 13px; margin-top: 4px; }
+@media (max-width: 760px) {
+  table.diff thead { display: none; }
+  table.diff, table.diff tbody, table.diff tr, table.diff th, table.diff td { display: block; width: 100%; }
+  table.diff tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  table.diff td::before { content: attr(data-label); display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+}
+.best { border: 1px solid color-mix(in srgb, var(--good) 35%, var(--border)); background: linear-gradient(var(--best-wash), var(--best-wash)), var(--surface); }
+.tip-card p { margin: 0; }
+.raw-wrap summary { cursor: pointer; list-style: none; }
+.raw-wrap summary::-webkit-details-marker { display: none; }
+.raw-wrap summary h2 { margin: 0; }
+.raw-wrap summary h2::after { content: attr(data-closed); font-size: 13px; color: var(--muted); font-weight: 400; }
+.raw-wrap[open] summary h2::after { content: attr(data-open); }
+.raw-grid { margin-top: 14px; }
+.raw { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.raw.claude { border-top: 3px solid var(--claude); }
+.raw.codex { border-top: 3px solid var(--codex); }
+.raw header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.md { overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h1, .md h2, .md h3, .md h4 { font-size: 15px; margin: 14px 0 6px; display: block; }
+.md p { margin: 8px 0; }
+.md ul, .md ol { margin: 6px 0; padding-left: 22px; }
+.md ul { list-style: disc; }
+.md ul li, .md ol li { padding-left: 0; margin: 3px 0; }
+.md ul li::before { content: none; }
+.md code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 5px; font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; }
+.md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; overflow-x: auto; }
+.md pre code { background: none; border: 0; padding: 0; }
+.md blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid var(--axis); color: var(--ink-2); }
+.md .md-table { overflow-x: auto; margin: 8px 0; }
+.md table th, .md table td { border: 1px solid var(--grid); padding: 5px 10px; font-size: 14px; }
+.md table th { background: var(--surface-2); }
+.md a { color: var(--codex); }
+.md hr { border: 0; border-top: 1px solid var(--grid); margin: 12px 0; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding-top: 8px; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+@media (forced-colors: active) { .bar { border: 1px solid CanvasText; } }
+@media print { body { background: #fff; } .card { break-inside: avoid; } #tip { display: none; } }
+</style>
+</head>
+<body>
+<main class="report">
+  <header class="hero">
+    <div class="eyebrow">Claude × Codex comparison report</div>
+    <h1>Please analyze 3 US stocks that rose 30% this week.</h1>
+    <div class="meta">2026-10-13 00:01 · Topic: Stocks · Judge: Claude (blind review, random order) · Claude took 1m 14s · Codex took 1m 27s</div>
+  </header>
+
+  <section class="card verdict">
+    <div class="verdict-main">
+      <div class="badge claude">🏆 Claude gave the better answer</div>
+      <p class="verdict-text">Claude is more thorough and better reasoned, and its deal-spread and dilution analysis is more useful. Codex is careful and honest, but it rests on a one-day intraday snapshot.</p>
+      <p class="reason">Claude states clearly how it defined &quot;this week&quot; and picks stocks with identifiable causes for the moves. For each one it explains what caused the move, the potential gain and loss, and the main risks, and it warns about pump-style gainers. Codex&#39;s data covers only part of one session, and it gives weak explanations for two of its three picks.</p>
+    </div>
+    <div class="tiles">
+    <div class="tile claude lead">
+      <div class="tile-name"><span class="who claude"><i></i>Claude</span></div>
+      <div class="tile-num">43<small>/50</small></div>
+    </div>
+    <div class="tile codex">
+      <div class="tile-name"><span class="who codex"><i></i>Codex</span></div>
+      <div class="tile-num">36<small>/50</small></div>
+    </div></div>
+  </section>
+
+  <section class="card">
+    <h2>Scores on 5 criteria</h2>
+    
+    <div class="legend"><span class="legend-item"><i class="sw claude"></i>Claude</span><span class="legend-item"><i class="sw codex"></i>Codex</span><span class="legend-note">Out of 10</span></div>
+    <div class="chart" role="img" aria-label="Score comparison on five criteria">
+      <div class="grid"><i style="left:0%"></i><i style="left:20%"></i><i style="left:40%"></i><i style="left:60%"></i><i style="left:80%"></i><i style="left:100%"></i></div>
+      <div class="row"><div class="row-label">Accuracy</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · Accuracy: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:70%" data-tip="Codex · Accuracy: 7 / 10"></div><span class="bar-val">7</span></div></div></div><div class="row"><div class="row-label">Completeness</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:90%" data-tip="Claude · Completeness: 9 / 10"></div><span class="bar-val">9</span></div><div class="bar-line"><div class="bar codex" style="width:70%" data-tip="Codex · Completeness: 7 / 10"></div><span class="bar-val">7</span></div></div></div><div class="row"><div class="row-label">Clarity</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:90%" data-tip="Claude · Clarity: 9 / 10"></div><span class="bar-val">9</span></div><div class="bar-line"><div class="bar codex" style="width:80%" data-tip="Codex · Clarity: 8 / 10"></div><span class="bar-val">8</span></div></div></div><div class="row"><div class="row-label">Practicality</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · Practicality: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:70%" data-tip="Codex · Practicality: 7 / 10"></div><span class="bar-val">7</span></div></div></div><div class="row"><div class="row-label">Depth</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:90%" data-tip="Claude · Depth: 9 / 10"></div><span class="bar-val">9</span></div><div class="bar-line"><div class="bar codex" style="width:70%" data-tip="Codex · Depth: 7 / 10"></div><span class="bar-val">7</span></div></div></div>
+      <div class="row axis"><div class="row-label"></div><div class="row-bars ticks"><span style="left:0%">0</span><span style="left:20%">2</span><span style="left:40%">4</span><span style="left:60%">6</span><span style="left:80%">8</span><span style="left:100%">10</span></div></div>
+    </div>
+    <details class="table-view"><summary>Show score table</summary>
+      <table><thead><tr><th>Criterion</th><th>Claude</th><th>Codex</th></tr></thead>
+      <tbody><tr><th>Accuracy</th><td>8</td><td>7</td></tr><tr><th>Completeness</th><td>9</td><td>7</td></tr><tr><th>Clarity</th><td>9</td><td>8</td></tr><tr><th>Practicality</th><td>8</td><td>7</td></tr><tr><th>Depth</th><td>9</td><td>7</td></tr><tr class="sum"><th>Total</th><td>43</td><td>36</td></tr></tbody></table>
+    </details>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><h2>✓ Where they agree</h2><ul class="checks"><li>Both state how they defined the timeframe for &quot;this week&quot;</li><li>Both see a cash offer price as the clearest catalyst, with risk that it may not complete</li><li>Both treat micro-cap rallies as speculative</li><li>Both cite sources and present the data in a table</li></ul></section>
+    <section class="card"><h2>⚠ Watch out</h2><ul class="issues"><li><span class="sev sev-mid">⚠️ Medium</span><span class="who codex"><i></i>Codex</span><span class="issue-text">Says Monday&#39;s session was &quot;underway&quot; when today is Tuesday, Oct 13, so the data is stale and the gains were incomplete.</span></li><li><span class="sev sev-low">ℹ️ Low</span><span class="who claude"><i></i>Claude</span><span class="issue-text">PTC&#39;s ~$192 price is about 6.8% below the $205 deal price, not 6.6%. This is a minor rounding issue.</span></li></ul></section>
+  </div>
+
+  <section class="card">
+    <h2>Where they differ</h2>
+    <div class="table-wrap"><table class="diff"><thead><tr><th>Aspect</th><th><span class="who claude"><i></i>Claude</span></th><th><span class="who codex"><i></i>Codex</span></th><th>Better · why</th></tr></thead><tbody>
+    <tr>
+      <th scope="row">Timeframe</th>
+      <td data-label="Claude">Uses the trailing week (Oct 5–12) and notes that today is Tuesday.</td>
+      <td data-label="Codex">Uses intraday gains from Monday only, so the moves were incomplete.</td>
+      <td data-label="Verdict"><span class="better claude">Claude is better</span><div class="note">Gains from part of one day are fragile and possibly already out of date.</div></td>
+    </tr>
+    <tr>
+      <th scope="row">Stock selection</th>
+      <td data-label="Claude">Picks three stocks whose moves have identifiable causes.</td>
+      <td data-label="Codex">Two of its three picks have no verified catalyst.</td>
+      <td data-label="Verdict"><span class="better claude">Claude is better</span><div class="note">Stocks with known catalysts can actually be analyzed.</div></td>
+    </tr>
+    <tr>
+      <th scope="row">Risk analysis depth</th>
+      <td data-label="Claude">Calculates the deal spread and the downside if the deal fails, and quantifies dilution.</td>
+      <td data-label="Codex">Covers the tender offer&#39;s conditions and the Nasdaq compliance problem.</td>
+      <td data-label="Verdict"><span class="better claude">Claude is better</span><div class="note">Claude quantifies more of the potential gains and losses.</div></td>
+    </tr>
+    <tr>
+      <th scope="row">Honesty about uncertainty</th>
+      <td data-label="Claude">Includes a disclaimer about the screening data.</td>
+      <td data-label="Codex">Says plainly when it could not verify a catalyst.</td>
+      <td data-label="Verdict"><span class="better codex">Codex is better</span><div class="note">Codex is more open about the limits of its evidence.</div></td>
+    </tr></tbody></table></div>
+  </section>
+
+  <div class="grid2">
+    <div class="card side claude">
+      <h3><span class="who claude"><i></i>Claude</span></h3>
+      <div class="pc-title plus">Strengths</div><ul class="plus"><li>Quantified merger-arbitrage analysis of PTC</li><li>Points out that the rallies came alongside dilutive share sales</li><li>Warns against chasing pump-style gainers</li></ul>
+      <div class="pc-title minus">Weaknesses</div><ul class="minus"><li>Its main source for PDSB is a stock-promotion trading blog</li><li>The trailing week does not strictly match &quot;this week&quot;</li></ul>
+    </div>
+    <div class="card side codex">
+      <h3><span class="who codex"><i></i>Codex</span></h3>
+      <div class="pc-title plus">Strengths</div><ul class="plus"><li>Clearly lists the tender offer&#39;s conditions, including that SOL must stay above $100</li><li>Transparent about which catalysts it could not verify</li><li>Gives concrete checkpoints to watch, such as the October 23 compliance deadline</li></ul>
+      <div class="pc-title minus">Weaknesses</div><ul class="minus"><li>Intraday data from Monday was already out of date</li><li>Two of its picks have no explanation for their rallies</li><li>Less quantitative depth</li></ul>
+    </div></div>
+
+  <section class="card best">
+    <h2>★ Combined best answer <span class="muted">Merges the strengths of both and fixes their mistakes</span></h2>
+    <div class="md"><h2>Three US stocks that rose 30%+ (trailing week, Oct 5–12, 2026)</h2>
+<div class="md-table"><table><thead><tr><th>Stock</th><th>Gain</th><th>Catalyst</th><th>Read</th></tr></thead><tbody><tr><td>PTC</td><td>~+33%</td><td>Schneider Electric is buying it for $205/share in cash</td><td>About 7% of upside is left; the risk is that the deal does not close</td></tr><tr><td>PDSB</td><td>~+90%</td><td>Phase 2 data, a funding deal of up to $22.3M, and an option for NantWorks to negotiate a license</td><td>Speculative, and the funding dilutes existing holders</td></tr><tr><td>SAIQ</td><td>~+98%</td><td>New listing via a shell-company (SPAC) merger, momentum trading</td><td>Purely a trading stock, down about 60% from its peak</td></tr></tbody></table></div>
+<p><strong>PTC:</strong> The stock is about $192 against a $205 deal price, so roughly 6.8% upside remains. Closing is expected around Q3 2027, and the deal needs regulatory and shareholder approval. If it fails, the stock could fall about 25% to $144.</p>
+<p><strong>PDSB:</strong> The funding reduces the risk of running out of cash, but it dilutes shareholders by about 20%. An option to negotiate is not a signed license. Keep any position very small.</p>
+<p><strong>SAIQ:</strong> Few shares trade freely, the company is selling shares to a related party (SEALSQ), and it has little history as a standalone company. Price is following momentum, not value.</p>
+<p><strong>Also worth watching:</strong> SkyAI (SKYA) announced a conditional $3 tender offer for its shares. The offer requires SOL to stay above $100 and enough shareholders to participate. Avoid gainers with no news, such as NCPL, which has overdue filings and a Nasdaq compliance deadline of Oct 23.</p>
+<p><em>This is not investment advice. Check current quotes before acting.</em></p></div>
+  </section>
+
+  <section class="card tip-card"><h2>💡 How to use this</h2><p>Start with the deal-based analysis (PTC, and SKYA&#39;s tender offer) and size those positions around the risk that the deal fails. Avoid chasing micro-cap stocks that rallied without news.</p></section>
+
+  <section class="card">
+    <details class="raw-wrap"><summary><h2 data-open="Hide ▴" data-closed="Show ▾">Original answers (side by side)</h2></summary>
+      <div class="grid2 raw-grid"><article class="raw claude"><header><span class="who claude"><i></i>Claude</span><span class="muted">Took 1m 14s</span></header><div class="md"><h1>Three US stocks up more than 30% in the past week</h1>
+<p>It&#39;s Tuesday, October 13, so &quot;this week&quot; has only had one full trading day. I used the <strong>trailing week (about Oct 5–12, 2026)</strong> instead. Most of the biggest percentage gainers were tiny stocks with no clear news, so I picked three with an identifiable reason for the move.</p>
+<div class="md-table"><table><thead><tr><th>Stock</th><th>Weekly gain</th><th>Price</th><th>Market cap</th><th>What caused it</th><th>My read</th></tr></thead><tbody><tr><td><strong>PTC (PTC)</strong></td><td>~+33%</td><td>~$192</td><td>~$23B</td><td>Cash takeover at $205/share</td><td>The move is real, but most of the upside is already in the price</td></tr><tr><td><strong>PDS Biotechnology (PDSB)</strong></td><td>~+90%</td><td>$1.43</td><td>~$104M</td><td>Phase 2 cancer data plus a funding deal</td><td>High risk, depends on news</td></tr><tr><td><strong>WISeSat.Space (SAIQ)</strong></td><td>~+98%</td><td>$3.85</td><td>~$75M</td><td>Newly listed after merging with a shell company; momentum trading</td><td>Speculative, very volatile</td></tr></tbody></table></div>
+<hr>
+<h2>1. PTC (Nasdaq: PTC): being bought out</h2>
+<p><strong>What happened:</strong> On Oct 5, Schneider Electric agreed to buy PTC, an industrial software company, for <strong>$205 per share in cash</strong>. The total value is about $22.6B, a <strong>42.3% premium</strong> to the last close and Schneider&#39;s largest acquisition ever. PTC jumped about 33.5% to roughly $192.</p>
+<p><strong>Analysis:</strong></p>
+<ul><li><strong>The remaining upside is small.</strong> At about $192, the stock is roughly <strong>6.6% below the $205 deal price</strong>. Closing is expected around <strong>Q3 2027</strong>, so that works out to a modest annual return for waiting about a year.</li><li><strong>What the gap reflects:</strong> The deal still needs regulatory approval in the US, EU and possibly China, plus a PTC shareholder vote. Schneider is also financing it with about €16–17B of new debt and €5–6B of new shares, which adds some execution risk.</li><li><strong>Downside if the deal fails:</strong> The stock could fall back toward its pre-deal price of about $144, roughly 25% lower.</li><li><strong>Takeaway:</strong> This is now a bet on the deal closing, not on PTC&#39;s business growing. It mainly suits investors comfortable with that kind of trade.</li></ul>
+<h2>2. PDS Biotechnology (Nasdaq: PDSB): cancer data and new funding</h2>
+<p><strong>What happened:</strong> The stock rose about 35% on Oct 9 alone, about 90% for the week. Investors were reacting to new data for its cancer drug candidates and a disease-expert event on PDS0301 for colorectal cancer that has spread to the liver. Two other pieces of news came out around the same time:</p>
+<ul><li>A private share sale of <strong>up to $22.3M</strong>.</li><li>NantWorks received a <strong>one-year exclusive option</strong> to negotiate a license for PDS0101, the company&#39;s lead HPV-related cancer therapy.</li></ul>
+<p><strong>Analysis:</strong></p>
+<ul><li><strong>Positive:</strong> The funding reduces the near-term risk of running out of cash. The NantWorks option could lead to a partnership. Analysts at H.C. Wainwright rate it Buy with a $5 target, though they cut that target from $7.</li><li><strong>Risks:</strong><ul><li>The share sale could equal about <strong>20% of the company&#39;s market value</strong>, so existing holders get diluted.</li><li>The stock is still near $1.40 and well below past highs. Big jumps after phase 2 data often fade.</li><li>An option to negotiate is not a signed license.</li></ul></li><li><strong>Takeaway:</strong> This is speculative biotech. Treat it as a lottery-ticket-sized position at most, and expect sharp pullbacks.</li></ul>
+<h2>3. WISeSat.Space (Nasdaq: SAIQ): new listing driven by momentum</h2>
+<p><strong>What happened:</strong> SAIQ started trading on Oct 2 after its merger with a shell company (SPAC) closed. It&#39;s a WISeKey subsidiary working on satellite IoT communications with &quot;post-quantum&quot; (quantum-resistant) security. It opened near $2.55 and fell to $1.85, then <strong>spiked to an intraday high of $9.94 on Oct 5</strong> and closed that day at $6.67. It later dropped about 27% after a <strong>$10M share sale to its affiliate SEALSQ</strong>, and it&#39;s now around $3.85.</p>
+<p><strong>Analysis:</strong></p>
+<ul><li><strong>The story:</strong> Quantum-safe security in space is a popular theme. The company also plans a satellite network of up to 100 satellites through 2033.</li><li><strong>Warning signs:</strong><ul><li>It&#39;s a recent shell-company listing with very few shares trading freely, so the price can swing wildly.</li><li>It has already fallen about 60% from its peak.</li><li>It&#39;s raising money from related parties.</li><li>It has little operating history as a separately traded company.</li></ul></li><li><strong>Takeaway:</strong> This is purely a trading stock. Its price is following momentum, not underlying value.</li></ul>
+<hr>
+<h2>Overall</h2>
+<ul><li><strong>The best-quality move:</strong> PTC, because a signed deal backs it. The catch is that only about 6–7% of upside remains, with risk on the deal closing.</li><li><strong>The other two:</strong> PDSB and SAIQ are small, thinly traded stocks whose jumps came with <strong>new share sales that dilute existing holders</strong>. Moves like this often give back much of the gain.</li><li><strong>Avoid chasing:</strong> The week&#39;s biggest percentage gainers (WFF +998%, MNDR, JZ, OLB, YMAT) are mostly tiny companies with no clear news. That pattern is typical of pump-style trading.</li></ul>
+<p><em>This is general information, not personalized investment advice. The weekly percentages come from screening sites and depend on the exact dates measured.</em></p>
+<p><strong>Sources:</strong></p>
+<ul><li><a href="https://stockanalysis.com/markets/gainers/week/" target="_blank" rel="noopener noreferrer">StockAnalysis – Top weekly gainers</a></li><li><a href="https://site.financialmodelingprep.com/market-news/notable-stock-gainers-october-5-2026" target="_blank" rel="noopener noreferrer">FMP – Notable gainers Oct 5, 2026</a></li><li><a href="https://capital.com/en-int/news/schneider-electric-to-buy-ptc-for-205-per-share" target="_blank" rel="noopener noreferrer">Capital.com – Schneider to buy PTC for $205/share</a></li><li><a href="https://thenextweb.com/news/schneider-electric-ptc-22-6bn" target="_blank" rel="noopener noreferrer">The Next Web – Schneider/PTC $22.6bn</a></li><li><a href="https://www.timothysykes.com/news/pdsbiotechnologycorporation-pdsb-news-2026_10_11/" target="_blank" rel="noopener noreferrer">Timothy Sykes – PDSB phase 2 data &amp; Nant deal</a></li><li><a href="https://thequantuminsider.com/?p=2394540" target="_blank" rel="noopener noreferrer">The Quantum Insider – WISeSat.Space begins Nasdaq trading</a></li><li><a href="https://stockstotrade.com/news/wisesatspace-holdings-corp-saiq-news-2026_10_09-2/" target="_blank" rel="noopener noreferrer">StocksToTrade – SAIQ news Oct 9</a></li><li><a href="https://briefglance.com/articles/wisesat-defies-spac-slump-bringing-quantum-secure-space-iot-to-nasdaq" target="_blank" rel="noopener noreferrer">BriefGlance – WISeSat key data</a></li></ul></div></article><article class="raw codex"><header><span class="who codex"><i></i>Codex</span><span class="muted">Took 1m 27s</span></header><div class="md"><p><strong>SkyAI has the clearest identifiable catalyst; Netcapital and Freight Technologies require more caution because I could not verify fresh news explaining their rallies.</strong> All three appeared above +30% in the latest market screen.</p>
+<p>I’m interpreting “US stocks” as <strong>US-listed stocks</strong> and “this week” as October 12–16, 2026. At the time checked, Monday’s US session was still underway, so these are <strong>week-to-date intraday gains</strong>, measured against Friday’s close—not completed weekly returns.</p>
+<div class="md-table"><table><thead><tr><th>Stock</th><th style="text-align:right">Screened price</th><th style="text-align:right">Week-to-date gain</th><th>Main issue</th></tr></thead><tbody><tr><td>Netcapital (<strong>NCPL</strong>)</td><td style="text-align:right">$1.680</td><td style="text-align:right"><strong>47.37%</strong></td><td>Rally without a verified fresh catalyst</td></tr><tr><td>SkyAI (<strong>SKYA</strong>)</td><td style="text-align:right">$2.510</td><td style="text-align:right"><strong>37.91%</strong></td><td>Proposed $3 cash tender offer</td></tr><tr><td>Freight Technologies (<strong>FRGT</strong>)</td><td style="text-align:right">$0.387</td><td style="text-align:right"><strong>31.84%</strong></td><td>Speculative momentum in a tiny company</td></tr></tbody></table></div>
+<p>Prices and percentages are from the same <a href="https://stockanalysis.com/markets/gainers/" target="_blank" rel="noopener noreferrer">Stock Analysis market snapshot</a>; quotes can change quickly.</p>
+<p><strong>1. SkyAI — strongest catalyst, but completion risk matters</strong></p>
+<p>SkyAI announced plans to buy up to 95% of its common stock and eligible warrant classes for <strong>$3 per security</strong>, with a maximum outlay of approximately $201 million. It expects to commence the offer around October 15. That provides a concrete explanation for the rally. <a href="https://www.globenewswire.com/fr/news-release/2026/10/12/3378548/0/en/skyai-announces-intention-to-commence-cash-tender-offer-to-purchase-common-stock-and-pre-funded-warrants-at-3-00-per-share-pre-funded-warrant.html" target="_blank" rel="noopener noreferrer">Company announcement</a></p>
+<p>At the screened $2.51 price, $3 represents approximately <strong>19.5% potential upside if shares are purchased at that price</strong>. However, the offer has not commenced and is conditional—including minimum participation requirements and SOL remaining above $100 throughout the offer period. Funding depends partly on Solana treasury sales. <a href="https://www.globenewswire.com/de/news-release/2026/10/12/3378548/0/en/skyai-announces-intention-to-commence-cash-tender-offer-to-purchase-common-stock-and-pre-funded-warrants-at-3-00-per-share-pre-funded-warrant.html" target="_blank" rel="noopener noreferrer">Offer conditions and funding</a></p>
+<p><strong>My assessment:</strong> An event-driven opportunity worth examining. The discount to $3 reflects uncertainty; it is not a guaranteed return. The next decisive evidence is the definitive tender documentation.</p>
+<p><strong>2. Netcapital — price strength exceeds the available fundamental evidence</strong></p>
+<p>I could not verify a fresh company announcement explaining Monday’s jump. The more concrete recent development is negative: Netcapital disclosed overdue annual and quarterly filings and a Nasdaq compliance notice. It has until <strong>October 23</strong> to submit a plan covering both delinquent reports. <a href="https://www.globenewswire.com/news-release/2026/09/25/3369339/0/en/netcapital-inc-receives-nasdaq-notice-related-to-delayed-quarterly-report-on-form-10-q.html" target="_blank" rel="noopener noreferrer">Netcapital announcement</a></p>
+<p>Its recent trading also shows sharp reversals: shares gained roughly 46% on October 7, then fell approximately 18% and 13% over the following two sessions. <a href="https://stockanalysis.com/stocks/ncpl/history/" target="_blank" rel="noopener noreferrer">Price history</a></p>
+<p><strong>My assessment:</strong> Treat the rally as speculative until filings or substantive business news support it. The key checkpoints are completed financial reports, current cash resources, and Nasdaq’s response to its compliance plan.</p>
+<p><strong>3. Freight Technologies — operating potential, weak explanation for this move</strong></p>
+<p>Freight Technologies develops logistics software for North American cross-border shipping. Its recent announced product work includes AI-powered proof-of-delivery validation and integrations for carrier compliance and invoicing. I could not verify a new announcement tying those developments to Monday’s surge. <a href="https://fr8technologies.com/investors-relations/" target="_blank" rel="noopener noreferrer">Company investor page</a></p>
+<p>The market screen puts its equity value at only about <strong>$2.1 million</strong>, despite tens of millions of shares trading. That combination makes the price particularly sensitive to speculative demand. <a href="https://stockanalysis.com/markets/gainers/" target="_blank" rel="noopener noreferrer">Market snapshot</a></p>
+<p><strong>My assessment:</strong> Product releases provide a business narrative, but sustained upside needs evidence of customer adoption, revenue growth, and improving cash flow. Without that evidence, a 30% jump offers little basis for judging fair value.</p></div></article></div>
+    </details>
+  </section>
+
+  <footer>Generated 2026-10-13 00:03 · Dual AI Chat · Scores come from an AI judge and are for reference only</footer>
+</main>
+<div id="tip" role="tooltip" hidden></div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search).get('theme');
+  if (q === 'dark' || q === 'light') document.documentElement.setAttribute('data-theme', q);
+  var tip = document.getElementById('tip');
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { tip.textContent = el.getAttribute('data-tip'); tip.hidden = false; });
+    el.addEventListener('mousemove', function (e) { tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; });
+    el.addEventListener('mouseleave', function () { tip.hidden = true; });
+  });
+  function post() {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: 'dual-report-height', path: location.pathname, height: document.documentElement.scrollHeight }, '*');
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(post).observe(document.body);
+  document.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', post); });
+  window.addEventListener('load', post);
+  post();
+})();</script>
+</body>
+</html>

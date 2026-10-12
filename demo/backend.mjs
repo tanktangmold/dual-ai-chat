@@ -154,7 +154,7 @@ export function createDemoBackend({ data, t, now = () => Date.now(), schedule = 
 
     for (const m of models) {
       const finish = scaled(m);
-      at(300, () => emit(job, { type: 'status', model: m, text: '💭 …' }));
+      at(300, () => emit(job, { type: 'status', model: m, text: rec.web ? '🔍 …' : '💭 …' }));
       if (m === 'claude') {
         const parts = chunkText(rec.answers[m].text);
         parts.forEach((part, i) => at(700 + Math.round(((finish - 700) * (i + 1)) / parts.length), () => emit(job, { type: 'delta', model: m, text: part })));
@@ -231,7 +231,7 @@ export function createDemoBackend({ data, t, now = () => Date.now(), schedule = 
       lang: sample.lang,
       question: sample.question,
       attachments: sample.turn.attachments ?? [],
-      web: false,
+      web: Boolean(sample.turn.web),
       status: 'running',
       answers: Object.fromEntries(models.map((m) => [m, { status: 'running', text: '' }])),
       comparison: models.length === 2 ? { status: 'pending' } : null

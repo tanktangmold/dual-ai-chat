@@ -134,3 +134,16 @@ test('chunkText 按字符切，中文也均匀、拼回原文', () => {
   assert.equal(parts.join(''), s);
   assert.ok(parts.length <= 7);
 });
+
+test('联网的示例回放时也带联网标记，状态显示搜索', () => {
+  const clock = fakeClock();
+  const web = { conversations: [{ ...DATA.conversations[0], turns: [{ ...DATA.conversations[0].turns[0], web: true }] }] };
+  const api = createDemoBackend({ data: web, t, now: () => NOW, schedule: clock.schedule, cancelTimer: clock.cancelTimer });
+  const conv = api.handle('POST', '/api/conversations', {}).data;
+  const res = api.handle('POST', `/api/conversations/${conv.id}/ask`, { question: api.samples[0].question, mode: 'both' });
+  assert.equal(res.data.turn.web, true);
+  const events = [];
+  api.subscribe(res.data.turnId, (e) => events.push(e));
+  clock.run();
+  assert.ok(events.some((e) => e.type === 'status' && e.text.startsWith('🔍')));
+});
