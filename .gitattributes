@@ -1,0 +1,11 @@
+* text=auto
+
+# Windows scripts must keep CRLF line endings on every platform
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.vbs text eol=crlf
+INSTALL*.txt text eol=crlf
+
+*.png binary
+*.ico binary
+*.heic binary
