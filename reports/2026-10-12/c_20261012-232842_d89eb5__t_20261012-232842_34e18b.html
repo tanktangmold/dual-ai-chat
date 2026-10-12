@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>对比报告 · 用三句话向小学生解释什么是通货膨胀。</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --claude: #eb6834; --codex: #2a78d6;
+  --claude-wash: rgba(235,104,52,0.10); --codex-wash: rgba(42,120,214,0.10);
+  --good: #006300; --sev-high: #d03b3b; --sev-mid: #fab219; --sev-low: #898781;
+  --best-wash: rgba(12,163,12,0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --claude: #d95926; --codex: #3987e5;
+    --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+    --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --claude: #d95926; --codex: #3987e5;
+  --claude-wash: rgba(217,89,38,0.16); --codex-wash: rgba(57,135,229,0.16);
+  --good: #0ca30c; --best-wash: rgba(12,163,12,0.10);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--page); color: var(--ink); }
+body { font: 15px/1.7 system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif; }
+:lang(ja) body { font-family: system-ui, -apple-system, "Segoe UI", "Yu Gothic UI", "Meiryo", "Hiragino Sans", sans-serif; }
+.report { max-width: 1080px; margin: 0 auto; padding: 28px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+.hero { padding: 4px 4px 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.hero h1 { font-size: 22px; line-height: 1.45; margin: 6px 0 8px; font-weight: 650; white-space: pre-wrap; overflow-wrap: anywhere; }
+.meta, .muted { color: var(--muted); font-size: 13px; font-weight: 400; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+.card h2 { font-size: 16px; margin: 0 0 12px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.card h3 { margin: 0 0 10px; font-size: 15px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+.who { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.who i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.who.claude i, .sw.claude { background: var(--claude); }
+.who.codex i, .sw.codex { background: var(--codex); }
+.verdict { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+@media (max-width: 760px) { .verdict { grid-template-columns: 1fr; } }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 650; font-size: 14px; border: 1px solid var(--border); background: var(--surface-2); }
+.badge.claude { background: var(--claude-wash); }
+.badge.codex { background: var(--codex-wash); }
+.verdict-text { font-size: 18px; font-weight: 600; margin: 12px 0 4px; line-height: 1.55; }
+.reason { margin: 0; color: var(--ink-2); }
+.tiles { display: flex; gap: 12px; }
+.tile { border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; min-width: 128px; background: var(--surface-2); }
+.tile.lead.claude { box-shadow: inset 0 -3px 0 var(--claude); }
+.tile.lead.codex { box-shadow: inset 0 -3px 0 var(--codex); }
+.tile-num { font-size: 34px; font-weight: 700; line-height: 1.1; margin-top: 4px; }
+.tile-num small { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 2px; }
+.legend { display: flex; gap: 18px; align-items: center; font-size: 13px; color: var(--ink-2); margin-bottom: 10px; flex-wrap: wrap; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend-note { color: var(--muted); margin-left: auto; }
+.chart { position: relative; --label: 72px; }
+:lang(en) .chart { --label: 110px; }
+.chart .grid { position: absolute; left: calc(var(--label) + 12px); right: 34px; top: 0; bottom: 22px; pointer-events: none; }
+.chart .grid i { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--grid); }
+.chart .grid i:first-child { border-left-color: var(--axis); }
+.row { display: grid; grid-template-columns: var(--label) minmax(0, 1fr); gap: 12px; align-items: center; padding: 7px 0; position: relative; }
+.row-label { font-size: 14px; color: var(--ink-2); text-align: right; }
+.row-bars { padding-right: 34px; display: flex; flex-direction: column; gap: 2px; }
+.bar-line { position: relative; height: 12px; display: flex; align-items: center; }
+.bar { height: 10px; border-radius: 0 4px 4px 0; position: relative; cursor: default; }
+.bar::after { content: ""; position: absolute; inset: -4px 0; }
+.bar.claude { background: var(--claude); }
+.bar.codex { background: var(--codex); }
+.bar-val { font-size: 12px; color: var(--ink-2); margin-left: 6px; font-variant-numeric: tabular-nums; }
+.row.axis { padding: 0; }
+.ticks { position: relative; height: 18px; display: block; margin-right: 34px; padding: 0; }
+.ticks span { position: absolute; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.table-view { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+.table-view summary { cursor: pointer; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; }
+.table-view table { margin-top: 8px; max-width: 360px; }
+.table-view th, .table-view td { border-bottom: 1px solid var(--grid); padding: 4px 8px; text-align: left; font-variant-numeric: tabular-nums; }
+.table-view tr.sum th, .table-view tr.sum td { font-weight: 700; }
+ul { margin: 0; padding-left: 0; list-style: none; }
+ul li { position: relative; padding-left: 22px; margin: 6px 0; }
+ul.checks li::before { content: "✓"; position: absolute; left: 2px; color: var(--good); font-weight: 700; }
+ul.plus li::before { content: "+"; position: absolute; left: 4px; color: var(--good); font-weight: 700; }
+ul.minus li::before { content: "−"; position: absolute; left: 4px; color: var(--sev-high); font-weight: 700; }
+.pc-title { font-size: 12px; font-weight: 650; color: var(--muted); margin: 10px 0 2px; letter-spacing: .04em; }
+.side.claude { border-top: 3px solid var(--claude); }
+.side.codex { border-top: 3px solid var(--codex); }
+.empty { color: var(--muted); margin: 0; }
+.empty.ok { color: var(--good); }
+ul.issues li { padding-left: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.sev { font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; color: var(--ink); }
+.sev-high { background: color-mix(in srgb, var(--sev-high) 18%, transparent); }
+.sev-mid { background: color-mix(in srgb, var(--sev-mid) 26%, transparent); }
+.sev-low { background: color-mix(in srgb, var(--sev-low) 18%, transparent); }
+.issue-text { flex: 1 1 240px; }
+.table-wrap { overflow-x: auto; }
+table.diff th, table.diff td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--grid); font-size: 14px; }
+table.diff thead th { font-size: 13px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--axis); }
+table.diff tbody th { width: 16%; font-weight: 650; }
+table.diff td:nth-child(2) { background: var(--claude-wash); }
+table.diff td:nth-child(3) { background: var(--codex-wash); }
+.better { display: inline-block; font-size: 12px; font-weight: 650; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
+.better.claude { background: var(--claude-wash); }
+.better.codex { background: var(--codex-wash); }
+.note { color: var(--ink-2); font-size: 13px; margin-top: 4px; }
+@media (max-width: 760px) {
+  table.diff thead { display: none; }
+  table.diff, table.diff tbody, table.diff tr, table.diff th, table.diff td { display: block; width: 100%; }
+  table.diff tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  table.diff td::before { content: attr(data-label); display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+}
+.best { border: 1px solid color-mix(in srgb, var(--good) 35%, var(--border)); background: linear-gradient(var(--best-wash), var(--best-wash)), var(--surface); }
+.tip-card p { margin: 0; }
+.raw-wrap summary { cursor: pointer; list-style: none; }
+.raw-wrap summary::-webkit-details-marker { display: none; }
+.raw-wrap summary h2 { margin: 0; }
+.raw-wrap summary h2::after { content: attr(data-closed); font-size: 13px; color: var(--muted); font-weight: 400; }
+.raw-wrap[open] summary h2::after { content: attr(data-open); }
+.raw-grid { margin-top: 14px; }
+.raw { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.raw.claude { border-top: 3px solid var(--claude); }
+.raw.codex { border-top: 3px solid var(--codex); }
+.raw header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.md { overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h1, .md h2, .md h3, .md h4 { font-size: 15px; margin: 14px 0 6px; display: block; }
+.md p { margin: 8px 0; }
+.md ul, .md ol { margin: 6px 0; padding-left: 22px; }
+.md ul { list-style: disc; }
+.md ul li, .md ol li { padding-left: 0; margin: 3px 0; }
+.md ul li::before { content: none; }
+.md code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 5px; font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; }
+.md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; overflow-x: auto; }
+.md pre code { background: none; border: 0; padding: 0; }
+.md blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid var(--axis); color: var(--ink-2); }
+.md .md-table { overflow-x: auto; margin: 8px 0; }
+.md table th, .md table td { border: 1px solid var(--grid); padding: 5px 10px; font-size: 14px; }
+.md table th { background: var(--surface-2); }
+.md a { color: var(--codex); }
+.md hr { border: 0; border-top: 1px solid var(--grid); margin: 12px 0; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding-top: 8px; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+@media (forced-colors: active) { .bar { border: 1px solid CanvasText; } }
+@media print { body { background: #fff; } .card { break-inside: avoid; } #tip { display: none; } }
+</style>
+</head>
+<body>
+<main class="report">
+  <header class="hero">
+    <div class="eyebrow">Claude × Codex 对比报告</div>
+    <h1>用三句话向小学生解释什么是通货膨胀。</h1>
+    <div class="meta">2026-10-12 23:28 · 话题：学习研究 · 裁判：Claude（匿名评审，顺序随机） · Claude 用时 5.2 秒 · Codex 用时 13.0 秒</div>
+  </header>
+
+  <section class="card verdict">
+    <div class="verdict-main">
+      <div class="badge codex">🏆 Codex 的回答更好</div>
+      <p class="verdict-text">两份回答都准确、简洁，Codex更贴合“价格普遍上涨”的定义且例子更直观，略胜一筹。</p>
+      <p class="reason">Codex点明“很多东西”的价格都在上涨，比较接近“物价普遍上涨”的定义；面包的例子直接说明了购买力在下降，三句话层层递进。Claude的冰棍例子从2元涨到3元，涨幅50%，容易让人误以为通胀都这么猛；第三句讲的是大人常说的话，与核心概念关系不大，还用了编号格式。</p>
+    </div>
+    <div class="tiles">
+    <div class="tile claude">
+      <div class="tile-name"><span class="who claude"><i></i>Claude</span></div>
+      <div class="tile-num">39<small>/50</small></div>
+    </div>
+    <div class="tile codex lead">
+      <div class="tile-name"><span class="who codex"><i></i>Codex</span></div>
+      <div class="tile-num">41<small>/50</small></div>
+    </div></div>
+  </section>
+
+  <section class="card">
+    <h2>五维评分</h2>
+    
+    <div class="legend"><span class="legend-item"><i class="sw claude"></i>Claude</span><span class="legend-item"><i class="sw codex"></i>Codex</span><span class="legend-note">满分 10 分</span></div>
+    <div class="chart" role="img" aria-label="五个维度的评分对比">
+      <div class="grid"><i style="left:0%"></i><i style="left:20%"></i><i style="left:40%"></i><i style="left:60%"></i><i style="left:80%"></i><i style="left:100%"></i></div>
+      <div class="row"><div class="row-label">准确性</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · 准确性: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:90%" data-tip="Codex · 准确性: 9 / 10"></div><span class="bar-val">9</span></div></div></div><div class="row"><div class="row-label">完整性</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · 完整性: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:80%" data-tip="Codex · 完整性: 8 / 10"></div><span class="bar-val">8</span></div></div></div><div class="row"><div class="row-label">清晰度</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · 清晰度: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:90%" data-tip="Codex · 清晰度: 9 / 10"></div><span class="bar-val">9</span></div></div></div><div class="row"><div class="row-label">实用性</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:80%" data-tip="Claude · 实用性: 8 / 10"></div><span class="bar-val">8</span></div><div class="bar-line"><div class="bar codex" style="width:80%" data-tip="Codex · 实用性: 8 / 10"></div><span class="bar-val">8</span></div></div></div><div class="row"><div class="row-label">深度</div><div class="row-bars"><div class="bar-line"><div class="bar claude" style="width:70%" data-tip="Claude · 深度: 7 / 10"></div><span class="bar-val">7</span></div><div class="bar-line"><div class="bar codex" style="width:70%" data-tip="Codex · 深度: 7 / 10"></div><span class="bar-val">7</span></div></div></div>
+      <div class="row axis"><div class="row-label"></div><div class="row-bars ticks"><span style="left:0%">0</span><span style="left:20%">2</span><span style="left:40%">4</span><span style="left:60%">6</span><span style="left:80%">8</span><span style="left:100%">10</span></div></div>
+    </div>
+    <details class="table-view"><summary>查看分数表</summary>
+      <table><thead><tr><th>维度</th><th>Claude</th><th>Codex</th></tr></thead>
+      <tbody><tr><th>准确性</th><td>8</td><td>9</td></tr><tr><th>完整性</th><td>8</td><td>8</td></tr><tr><th>清晰度</th><td>8</td><td>9</td></tr><tr><th>实用性</th><td>8</td><td>8</td></tr><tr><th>深度</th><td>7</td><td>7</td></tr><tr class="sum"><th>合计</th><td>39</td><td>41</td></tr></tbody></table>
+    </details>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><h2>✓ 两者的共识</h2><ul class="checks"><li>通货膨胀就是东西变贵了</li><li>同样的钱能买到的东西变少了</li><li>都用了小学生熟悉的例子</li><li>都扣住了三句话的要求</li></ul></section>
+    <section class="card"><h2>⚠ 需要留意</h2><ul class="issues"><li><span class="sev sev-low">ℹ️ 低</span><span class="who claude"><i></i>Claude</span><span class="issue-text">冰棍一年涨50%，会让孩子误以为通胀通常很剧烈</span></li></ul></section>
+  </div>
+
+  <section class="card">
+    <h2>分歧对照</h2>
+    <div class="table-wrap"><table class="diff"><thead><tr><th>方面</th><th><span class="who claude"><i></i>Claude</span></th><th><span class="who codex"><i></i>Codex</span></th><th>谁更好 · 理由</th></tr></thead><tbody>
+    <tr>
+      <th scope="row">定义准确度</th>
+      <td data-label="Claude">说的是“东西慢慢变贵了”</td>
+      <td data-label="Codex">说的是“很多东西的价格都涨了”</td>
+      <td data-label="判断"><span class="better codex">Codex 更好</span><div class="note">Codex点出了“普遍上涨”的意思，更接近准确定义。</div></td>
+    </tr>
+    <tr>
+      <th scope="row">举例</th>
+      <td data-label="Claude">冰棍从2元涨到3元</td>
+      <td data-label="Codex">10元原来能买5个面包，现在只能买4个</td>
+      <td data-label="判断"><span class="better codex">Codex 更好</span><div class="note">Codex直接体现钱的购买力在下降；Claude的涨幅偏夸张。</div></td>
+    </tr>
+    <tr>
+      <th scope="row">第三句的作用</th>
+      <td data-label="Claude">引用爸妈常说的“以前的钱更值钱”</td>
+      <td data-label="Codex">零花钱不变的话，就买不了那么多东西了</td>
+      <td data-label="判断"><span class="better tie">不分上下</span><div class="note">Codex紧扣孩子自己的生活；Claude更有生活气息，但离核心概念稍远。</div></td>
+    </tr></tbody></table></div>
+  </section>
+
+  <div class="grid2">
+    <div class="card side claude">
+      <h3><span class="who claude"><i></i>Claude</span></h3>
+      <div class="pc-title plus">优点</div><ul class="plus"><li>“缩水”这个比喻很形象</li><li>加入“慢慢”，体现了时间推移</li><li>贴近家庭生活</li></ul>
+      <div class="pc-title minus">不足</div><ul class="minus"><li>例子涨幅偏大</li><li>第三句信息量低</li><li>编号格式不像三句话的自然表达</li></ul>
+    </div>
+    <div class="card side codex">
+      <h3><span class="who codex"><i></i>Codex</span></h3>
+      <div class="pc-title plus">优点</div><ul class="plus"><li>定义准确</li><li>例子直接体现购买力</li><li>语言简单</li></ul>
+      <div class="pc-title minus">不足</div><ul class="minus"><li>没有体现“时间推移”这一点</li><li>比较平淡，少了比喻</li></ul>
+    </div></div>
+
+  <section class="card best">
+    <h2>★ 综合最佳回答 <span class="muted">融合两者优点、修正错误</span></h2>
+    <div class="md"><p>通货膨胀就是很多东西的价格都在慢慢上涨，同样的钱能买到的东西变少了。<br>比如以前10元能买5个面包，现在只能买4个了，就像钱“缩水”了一样。<br>如果你的零花钱没有增加，你能买到的东西就会比以前少。</p></div>
+  </section>
+
+  <section class="card tip-card"><h2>💡 使用建议</h2><p>建议以Codex为底稿，加上Claude里“慢慢”和“缩水”的说法，这样讲给孩子听更生动。</p></section>
+
+  <section class="card">
+    <details class="raw-wrap"><summary><h2 data-open="收起 ▴" data-closed="展开 ▾">原始回答（并排对照）</h2></summary>
+      <div class="grid2 raw-grid"><article class="raw claude"><header><span class="who claude"><i></i>Claude</span><span class="muted">用时 5.2 秒</span></header><div class="md"><ol><li>通货膨胀就是东西慢慢变贵了，比如去年一根冰棍卖 2 元，今年可能要卖 3 元。</li><li>这意味着同样的钱能买到的东西变少了，就像你的零花钱&quot;缩水&quot;了一样。</li><li>所以爸爸妈妈常说&quot;以前的钱更值钱&quot;，就是因为物价一直在慢慢上涨。</li></ol></div></article><article class="raw codex"><header><span class="who codex"><i></i>Codex</span><span class="muted">用时 13.0 秒</span></header><div class="md"><p>通货膨胀就是很多东西的价格都涨了，同样的钱能买到的东西变少了。<br>比如以前用10元能买5个面包，现在只能买4个了。<br>如果你的零花钱没有增加，你就买不起以前那么多东西了。</p></div></article></div>
+    </details>
+  </section>
+
+  <footer>生成于 2026-10-12 23:29 · 双AI对话台 · 评分由 AI 裁判给出，仅供参考</footer>
+</main>
+<div id="tip" role="tooltip" hidden></div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search).get('theme');
+  if (q === 'dark' || q === 'light') document.documentElement.setAttribute('data-theme', q);
+  var tip = document.getElementById('tip');
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { tip.textContent = el.getAttribute('data-tip'); tip.hidden = false; });
+    el.addEventListener('mousemove', function (e) { tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; });
+    el.addEventListener('mouseleave', function () { tip.hidden = true; });
+  });
+  function post() {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: 'dual-report-height', path: location.pathname, height: document.documentElement.scrollHeight }, '*');
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(post).observe(document.body);
+  document.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', post); });
+  window.addEventListener('load', post);
+  post();
+})();</script>
+</body>
+</html>
