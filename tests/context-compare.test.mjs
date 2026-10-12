@@ -109,3 +109,11 @@ test('schema 满足严格模式：每层 required 覆盖全部字段', () => {
   walk(COMPARE_SCHEMA);
   assert.equal(DIMENSIONS.length, 5);
 });
+
+test('裁判提示词要求胜者和总分一致（避免「Codex 胜」却分数更低）', () => {
+  for (const lang of ['zh', 'ja', 'en']) {
+    const p = buildJudgePrompt({ question: 'Q', answers: { claude: 'C', codex: 'X' }, sides: { A: 'claude', B: 'codex' }, lang });
+    assert.match(p, /tie/);
+    assert.match(p, lang === 'en' ? /higher total score/ : lang === 'ja' ? /合計点が高い方/ : /总分更高的一方/);
+  }
+});

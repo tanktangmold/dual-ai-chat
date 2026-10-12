@@ -47,7 +47,7 @@ const JUDGE_TEXT = Object.freeze({
       '3. differences：两者说法不同或侧重点不同的地方（2-6 条）；A、B 字段各用一两句话概括各自的说法，better 写哪个更好（A/B/tie），note 说明理由。',
       '4. strengths / weaknesses：各自的优点和不足（每边 2-4 条）。',
       '5. issues：事实错误、过时信息、可疑或危险的建议（没有就给空数组），severity 用 高/中/低。',
-      '6. winner / winnerReason / verdict：谁更好、为什么、一句话总结结论。',
+      '6. winner / winnerReason / verdict：谁更好、为什么、一句话总结结论。winner 必须是五项总分更高的一方，总分相同才写 tie；如果你更看重某一项，就把它体现在分数里。',
       '7. bestAnswer：综合两者的优点、修正错误，写一份可以直接交给用户的最佳回答（Markdown）。',
       '8. recommendation：给用户的一两句使用建议（比如先采纳谁的哪部分、还要注意什么）。',
       '要求：全部用简体中文；不要因为篇幅长就给高分，看对用户的实际帮助；在文字里用「回答A」「回答B」指代两份回答。只输出符合 schema 的 JSON。'
@@ -65,7 +65,7 @@ const JUDGE_TEXT = Object.freeze({
       '3. differences：主張や重点が異なる点（2〜6件）。A・B にはそれぞれの主張を1〜2文で要約し、better には優れている方（A/B/tie）、note には理由。',
       '4. strengths / weaknesses：それぞれの良い点と足りない点（各2〜4件）。',
       '5. issues：事実誤り・古い情報・疑わしい／危険な助言（なければ空配列）。severity は 高/中/低。',
-      '6. winner / winnerReason / verdict：どちらが優れているか、その理由、結論を1文で。',
+      '6. winner / winnerReason / verdict：どちらが優れているか、その理由、結論を1文で。winner は5項目の合計点が高い方にし、同点のときだけ tie にする。重視する観点があれば点数に反映させる。',
       '7. bestAnswer：両者の良い点を合わせ、誤りを直した、そのままユーザーに渡せる最良の回答（Markdown）。',
       '8. recommendation：ユーザーへの1〜2文の使い方アドバイス（どちらのどの部分を採用するか、注意点など）。',
       '条件：すべて日本語で書く。長いだけで高得点にせず、ユーザーへの実際の有用性で判断する。本文では「回答A」「回答B」と呼ぶ。schema に合う JSON だけを出力する。'
@@ -83,7 +83,7 @@ const JUDGE_TEXT = Object.freeze({
       '3. differences: places where they disagree or emphasize different things (2–6 items). In A and B, summarize each answer\'s position in one or two sentences; in better, say which is better (A/B/tie); in note, explain why.',
       '4. strengths / weaknesses: 2–4 items for each answer.',
       '5. issues: factual errors, outdated information, questionable or risky advice (empty array if none); severity is 高 (high) / 中 (medium) / 低 (low).',
-      '6. winner / winnerReason / verdict: which is better, why, and the conclusion in one sentence.',
+      '6. winner / winnerReason / verdict: which is better, why, and the conclusion in one sentence. The winner must be the answer with the higher total score; use tie only when totals are equal. If one aspect matters more to you, reflect it in the scores.',
       '7. bestAnswer: combine the strengths of both, fix their mistakes, and write the best answer that can be handed directly to the user (Markdown).',
       '8. recommendation: one or two sentences of advice for the user (e.g. which parts to adopt first and what to watch out for).',
       'Requirements: write everything in English; do not reward length — judge by real usefulness to the user; refer to the answers as "Answer A" and "Answer B" in your text. Output only JSON that matches the schema.'
