@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="app.title">双AI对话台</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script type="module" src="/app.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"><i class="claude"></i><i class="codex"></i></span>
+      <span data-i18n="app.title">双AI对话台</span>
+      <button class="icon-btn only-mobile" id="closeSidebar" data-i18n-aria="nav.closeSidebar">✕</button>
+    </div>
+    <button class="btn primary new-chat" id="newChat" data-i18n="nav.new">＋ 新对话</button>
+    <div class="search">
+      <input id="search" type="search" data-i18n-ph="search.placeholder" autocomplete="off">
+    </div>
+    <div class="views" role="tablist" data-i18n-aria="view.label">
+      <button role="tab" data-view="date" aria-selected="true" data-i18n="view.date">按日期</button>
+      <button role="tab" data-view="topic" aria-selected="false" data-i18n="view.topic">按话题</button>
+    </div>
+    <div class="calendar" id="calendar"></div>
+    <div class="filter-chip" id="filterChip" hidden></div>
+    <nav class="conv-list" id="convList" data-i18n-aria="list.label"></nav>
+    <div class="sidebar-foot">
+      <button class="btn ghost" id="openSettings" data-i18n="foot.settings">⚙ 设置与连接</button>
+      <select id="langSelect" class="lang-select" data-i18n-aria="foot.lang">
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+      </select>
+      <span class="health" id="health" data-i18n-title="foot.health"></span>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar" id="topbar">
+      <button class="icon-btn only-mobile" id="openSidebar" data-i18n-aria="nav.openSidebar">☰</button>
+      <div class="topbar-info" id="topbarInfo"></div>
+    </header>
+
+    <section class="thread" id="thread" aria-live="polite"></section>
+
+    <form class="composer" id="composer" autocomplete="off">
+      <div class="mode-bar">
+        <div class="segmented" role="radiogroup" data-i18n-aria="mode.label" id="modeGroup">
+          <button type="button" role="radio" data-mode="claude"><i class="dot claude"></i><span data-i18n="mode.claude">只问 Claude</span></button>
+          <button type="button" role="radio" data-mode="codex"><i class="dot codex"></i><span data-i18n="mode.codex">只问 Codex</span></button>
+          <button type="button" role="radio" data-mode="both"><i class="dot claude"></i><i class="dot codex"></i><span data-i18n="mode.both">两个都问 · 对比</span></button>
+        </div>
+        <label class="toggle" data-i18n-title="web.title"><input type="checkbox" id="webToggle"><span class="track"></span><span data-i18n="web.label">联网搜索</span></label>
+      </div>
+      <div class="attach-list" id="attachList" hidden></div>
+      <div class="input-row">
+        <button type="button" class="attach-btn" id="attachBtn" data-i18n-title="attach.title" data-i18n-aria="attach.button">📎</button>
+        <input type="file" id="fileInput" multiple hidden>
+        <textarea id="question" rows="1" data-i18n-ph="input.placeholder" maxlength="20000"></textarea>
+        <button class="send" id="sendBtn" type="submit" data-i18n="send">发送</button>
+      </div>
+      <div class="hint" data-i18n="hint"></div>
+    </form>
+  </main>
+</div>
+
+<div class="drop-overlay" id="dropOverlay" hidden>
+  <div class="drop-box">
+    <div class="drop-icon">📎</div>
+    <div class="drop-title" data-i18n="attach.drop">松开即可添加文件</div>
+    <div class="muted" data-i18n="attach.dropHint"></div>
+  </div>
+</div>
+
+<dialog id="settingsDialog" class="dialog">
+  <form method="dialog" id="settingsForm">
+    <header class="dialog-head"><h2 data-i18n="set.title">设置与连接</h2><button class="icon-btn" value="cancel" data-i18n-aria="set.close">✕</button></header>
+    <div class="dialog-body">
+      <section class="set-block">
+        <h3 data-i18n="set.conn">连接状态</h3>
+        <div class="conn" id="connClaude"></div>
+        <div class="conn" id="connCodex"></div>
+        <h3 class="sub-h" data-i18n="set.tools">附件工具</h3>
+        <div class="tool-row" id="toolRows"></div>
+      </section>
+      <section class="set-block">
+        <h3 data-i18n="set.judge">对比裁判</h3>
+        <div class="radio-row">
+          <label><input type="radio" name="judge" value="claude"> <span data-i18n="set.judgeClaude">Claude（更快）</span></label>
+          <label><input type="radio" name="judge" value="codex"> Codex</label>
+        </div>
+        <label class="field inline"><span data-i18n="set.judgeEffort">裁判推理强度</span><select name="judgeEffort">
+          <option value="low" data-i18n="set.effort.low"></option>
+          <option value="medium" data-i18n="set.effort.medium"></option>
+          <option value="high" data-i18n="set.effort.high"></option>
+          <option value="xhigh" data-i18n="set.effort.xhigh"></option>
+          <option value="" data-i18n="set.effort.follow"></option>
+        </select></label>
+        <p class="muted small" data-i18n="set.judgeNote"></p>
+      </section>
+      <section class="set-block grid-2">
+        <div>
+          <h3>Claude</h3>
+          <label class="field"><span data-i18n="set.model">模型</span><input name="claudeModel" list="claudeModels" data-i18n-ph="set.claudeModelPh"></label>
+          <label class="field"><span data-i18n="set.effort">推理强度</span><select name="claudeEffort"><option value="" data-i18n="set.default"></option><option>low</option><option>medium</option><option>high</option><option>xhigh</option><option>max</option></select></label>
+        </div>
+        <div>
+          <h3>Codex</h3>
+          <label class="field"><span data-i18n="set.model">模型</span><input name="codexModel" list="codexModels" data-i18n-ph="set.codexModelPh"></label>
+          <label class="field"><span data-i18n="set.effort">推理强度</span><select name="codexEffort"><option value="" data-i18n="set.default"></option><option>minimal</option><option>low</option><option>medium</option><option>high</option><option>xhigh</option></select></label>
+        </div>
+      </section>
+      <section class="set-block">
+        <h3 data-i18n="set.other">其他</h3>
+        <label class="check"><input type="checkbox" name="web"> <span data-i18n="set.webDefault"></span></label>
+        <label class="field inline"><span data-i18n="set.timeout"></span><input name="timeoutMin" type="number" min="1" max="60" step="1"> <span data-i18n="set.minutes"></span></label>
+      </section>
+      <details class="set-block">
+        <summary data-i18n="set.advanced"></summary>
+        <label class="field"><span data-i18n="set.claudePath"></span><input name="claudePath" data-i18n-ph="set.claudePathPh"></label>
+        <label class="field"><span data-i18n="set.codexPath"></span><input name="codexPath" data-i18n-ph="set.codexPathPh"></label>
+        <label class="field"><span data-i18n="set.ffmpegPath"></span><input name="ffmpegPath" data-i18n-ph="set.ffmpegPathPh"></label>
+      </details>
+      <section class="set-block">
+        <h3 data-i18n="set.data">数据</h3>
+        <p class="muted small" id="dataInfo"></p>
+        <button type="button" class="btn small danger" id="shutdownBtn" data-i18n="set.shutdown"></button>
+      </section>
+    </div>
+    <footer class="dialog-foot">
+      <span class="muted small" id="settingsMsg"></span>
+      <button class="btn" value="cancel" data-i18n="set.cancel">取消</button>
+      <button class="btn primary" id="saveSettings" value="default" data-i18n="set.save">保存</button>
+    </footer>
+  </form>
+  <datalist id="claudeModels"><option value="opus"><option value="sonnet"><option value="haiku"><option value="fable"></datalist>
+  <datalist id="codexModels"><option value="gpt-6.1-sol"><option value="gpt-5.6-sol"><option value="gpt-5.6-terra"><option value="gpt-5.6-luna"></datalist>
+</dialog>
+
+<datalist id="topicList"></datalist>
+<div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

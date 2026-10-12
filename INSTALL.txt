@@ -1,0 +1,60 @@
+﻿Dual AI Chat - Installation guide
+=================================
+
+Ask Claude and ChatGPT (Codex) the same question, see both answers side by side, and get an
+automatic scored comparison with a visual report. It uses your own subscriptions - no per-use
+billing - and every chat stays on your own computer.
+
+(中文说明见 INSTALL.zh-CN.txt / 日本語の手順は INSTALL.ja.txt)
+
+
+WHAT YOU NEED
+- A Windows 10 or 11 PC with an internet connection
+- A Claude subscription (Pro or Max)
+- A ChatGPT subscription that includes Codex (Plus / Pro, etc.)
+- Nothing else to install beforehand, and no admin rights
+
+
+INSTALL (about 5-15 minutes depending on your connection)
+1. Download dual-ai-chat-v<version>.zip from the GitHub Releases page and extract it to a
+   permanent place, e.g. D:\dual-ai-chat
+   Note: use "Extract All" first - do not run it from inside the zip.
+
+2. Open the extracted dual-ai-chat folder and double-click install.bat.
+   - If Windows says "Windows protected your PC", click "More info" -> "Run anyway".
+   - It downloads Node.js, Claude Code and Codex into this folder's runtime\ subfolder.
+     Nothing is installed system-wide.
+
+3. A browser opens twice so you can sign in:
+   - First: sign in to your Claude subscription account and approve access.
+   - Second: choose "Sign in with ChatGPT" and sign in to your ChatGPT account.
+   After each sign-in, go back to the black window - it continues automatically.
+
+4. It asks about two optional features. Pressing Enter (Y) for both is recommended:
+   - PDF / Word / Excel reading (~60 MB)
+   - iPhone photo (HEIC) support (~100 MB)
+
+5. When you see "All done!", it opens the app. A "Dual AI Chat" icon appears on your desktop.
+
+
+EVERYDAY USE
+- Open: double-click "Dual AI Chat" on the desktop (or start.vbs in the folder).
+- Ask: choose "Claude only", "Codex only" or "Both · compare", then press Enter.
+- Attachments: drag images, screenshots, iPhone photos, PDF, Word, Excel or CSV into the window,
+  or paste a screenshot with Ctrl+V.
+- History: browse past chats by date (with a calendar) or by topic on the left, or search.
+- Language: switch between 中文 / 日本語 / English at the bottom left.
+
+
+TROUBLESHOOTING
+- Something failed or the network dropped: double-click install.bat again. It only adds what
+  is missing. The install log is data\install.log.
+- "Not signed in" / login expired: double-click install.bat again to reopen the sign-in pages.
+- Stop the background service: "Settings" (bottom left) -> "Stop background service".
+- Uninstall: stop the background service, then delete the whole folder and the desktop icon.
+  (Sign-in data lives in C:\Users\<you>\.claude and .codex - delete those too if you like.)
+
+
+PRIVACY
+Chats, attachments and reports are stored only in this folder's data\ subfolder and are not
+uploaded anywhere else (your questions are, of course, sent to Claude / ChatGPT to be answered).
