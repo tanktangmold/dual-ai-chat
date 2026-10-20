@@ -134,3 +134,23 @@ export function locateCli(name, { override, env = process.env, exists = existsSy
     .sort((a, b) => compareVersions(b.version, a.version));
   return { file: ranked[0].file, version: ranked[0].version?.raw ?? '', isCmd: /\.(cmd|bat)$/i.test(ranked[0].file), source: '自动查找（取最新版本）' };
 }
+
+/**
+ * 记住找到的 CLI，每次用之前确认文件还在。
+ * Codex 桌面版自动更新会删掉旧的 bin\<hash> 目录，服务一直开着就会一直拿旧路径 → spawn ENOENT；
+ * 文件不在了（或之前没找到）就重新找。refresh() 在设置改了路径时用。
+ */
+export function createCliCache(name, { getOverride, locate = locateCli, exists = existsSync }) {
+  const find = () => locate(name, { override: getOverride() });
+  let found = find();
+  return {
+    get() {
+      if (!found || !exists(found.file)) found = find();
+      return found;
+    },
+    refresh() {
+      found = find();
+      return found;
+    }
+  };
+}

@@ -15,7 +15,7 @@ import { createUploads } from './src/uploads.mjs';
 import { createJobs } from './src/jobs.mjs';
 import { createApp } from './src/app.mjs';
 import { createProvider } from './src/providers/index.mjs';
-import { locateCli } from './src/cli/locate.mjs';
+import { locateCli, createCliCache } from './src/cli/locate.mjs';
 import { locateFfmpeg, locatePython, pythonInfo } from './src/media.mjs';
 import { loadSettings, mergeSettings, saveSettings } from './src/settings.mjs';
 
@@ -97,18 +97,18 @@ async function main() {
   const log = makeLogger();
 
   let settings = await loadSettings(PATHS.settings, { log });
-  const locateAll = () => ({
-    claude: locateCli('claude', { override: settings.claude.path }),
-    codex: locateCli('codex', { override: settings.codex.path })
-  });
-  let clis = locateAll();
+  // 每次用之前确认 CLI 还在（Codex 桌面版自动更新会删旧目录），不在就重新找
+  const clis = {
+    claude: createCliCache('claude', { getOverride: () => settings.claude.path }),
+    codex: createCliCache('codex', { getOverride: () => settings.codex.path })
+  };
   let ffmpeg = locateFfmpeg({ override: settings.ffmpegPath });
   const pythonFile = locatePython();
   const python = pythonInfo(pythonFile)?.version ?? '';
 
   const providers = {
-    claude: createProvider('claude', { getCli: () => clis.claude, cwd: PATHS.workspace, tmpDir: PATHS.tmp }),
-    codex: createProvider('codex', { getCli: () => clis.codex, cwd: PATHS.workspace, tmpDir: PATHS.tmp })
+    claude: createProvider('claude', { getCli: () => clis.claude.get(), cwd: PATHS.workspace, tmpDir: PATHS.tmp }),
+    codex: createProvider('codex', { getCli: () => clis.codex.get(), cwd: PATHS.workspace, tmpDir: PATHS.tmp })
   };
 
   const store = createStore({ dir: DATA, log });
@@ -117,9 +117,10 @@ async function main() {
   const jobs = createJobs({ store, providers, uploads, getSettings: () => settings, reportsDir: PATHS.reports, log });
   const recovered = await jobs.recoverInterrupted();
 
+  const cliStatus = (found) => (found ? { found: true, ...found } : { found: false });
   const health = () => ({
-    claude: clis.claude ? { found: true, ...clis.claude } : { found: false },
-    codex: clis.codex ? { found: true, ...clis.codex } : { found: false },
+    claude: cliStatus(clis.claude.get()),
+    codex: cliStatus(clis.codex.get()),
     dataDir: DATA,
     reportsDir: PATHS.reports,
     conversations: store.list().length,
@@ -153,7 +154,8 @@ async function main() {
         const next = mergeSettings(settings, input);
         await saveSettings(PATHS.settings, next);
         settings = next;
-        clis = locateAll();
+        clis.claude.refresh();
+        clis.codex.refresh();
         ffmpeg = locateFfmpeg({ override: settings.ffmpegPath });
         return settings;
       });
@@ -190,8 +192,10 @@ async function main() {
 
   server.listen(PORT, '127.0.0.1', () => {
     log.info(`双AI对话台已启动：${URL_BASE}/  （${count} 段对话${recovered ? `，修复 ${recovered} 段中断的对话` : ''}）`);
-    log.info(`claude：${clis.claude ? `${clis.claude.file} ${clis.claude.version}` : '未找到'}`);
-    log.info(`codex：${clis.codex ? `${clis.codex.file} ${clis.codex.version}` : '未找到'}`);
+    for (const kind of ['claude', 'codex']) {
+      const found = clis[kind].get();
+      log.info(`${kind}：${found ? `${found.file} ${found.version}` : '未找到'}`);
+    }
     log.info(`ffmpeg（HEIC 转换）：${ffmpeg ?? '未找到'}；Python（文档提取）：${python || '未找到'}`);
     if (process.argv.includes('--open')) openWindow();
   });

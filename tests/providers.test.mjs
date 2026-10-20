@@ -9,7 +9,7 @@ import { join } from 'node:path';
 
 // provider 会往 tmpDir 写 schema / 语言设置文件，别写进项目目录
 const TMP = join(tmpdir(), 'dual-chat-provider-test');
-import { parseVersion, compareVersions, locateCli } from '../src/cli/locate.mjs';
+import { parseVersion, compareVersions, locateCli, createCliCache } from '../src/cli/locate.mjs';
 
 const feed = (reduce, initial, lines) =>
   lines.reduce(
@@ -181,4 +181,37 @@ test('定位 codex：桌面版和 npm 版都在时取版本新的', () => {
 
 test('定位：手填路径不存在时返回 null', () => {
   assert.equal(locateCli('claude', { override: 'Z:\\nope\\claude.exe', exists: () => false }), null);
+});
+
+test('CLI 缓存：文件还在就不重新找；Codex 桌面版更新删掉旧目录后自动换到新路径', () => {
+  const files = new Set(['old/codex.exe']);
+  const calls = [];
+  const locate = (name, { override }) => {
+    calls.push({ name, override });
+    const file = [...files].at(-1);
+    return file ? { file, version: '', isCmd: false } : null;
+  };
+  const cache = createCliCache('codex', { getOverride: () => '', locate, exists: (f) => files.has(f) });
+  assert.equal(cache.get().file, 'old/codex.exe');
+  assert.equal(cache.get().file, 'old/codex.exe');
+  assert.equal(calls.length, 1, '文件还在时只找一次');
+
+  files.delete('old/codex.exe');
+  files.add('new/codex.exe');
+  assert.equal(cache.get().file, 'new/codex.exe');
+  assert.equal(calls.length, 2);
+  assert.deepEqual(calls[1], { name: 'codex', override: '' });
+});
+
+test('CLI 缓存：没找到时下次再找（装好后不用重启）；refresh 按新设置重找', () => {
+  let installed = false;
+  let override = '';
+  const locate = (_name, opts) => (installed ? { file: opts.override || 'auto/claude.exe', version: '', isCmd: false } : null);
+  const cache = createCliCache('claude', { getOverride: () => override, locate, exists: () => true });
+  assert.equal(cache.get(), null);
+  installed = true;
+  assert.equal(cache.get().file, 'auto/claude.exe');
+  override = 'X:/my/claude.exe';
+  assert.equal(cache.get().file, 'auto/claude.exe', '没 refresh 前沿用缓存');
+  assert.equal(cache.refresh().file, 'X:/my/claude.exe');
 });
