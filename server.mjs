@@ -76,7 +76,23 @@ async function check() {
 `);
 }
 
+/** 本机这个端口上是不是已经有一个对话台在跑。 */
+async function alreadyRunning() {
+  try {
+    const res = await fetch(`${URL_BASE}/api/health`, { signal: AbortSignal.timeout(1500) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function main() {
+  // 先探测再动数据：第二个实例不能去「修复中断的对话」，那会误改正在回答的轮次
+  if (await alreadyRunning()) {
+    console.log(`端口 ${PORT} 已有服务在运行${process.argv.includes('--open') ? '，直接打开窗口' : ''}`);
+    if (process.argv.includes('--open')) openWindow();
+    return;
+  }
   await Promise.all(Object.values(PATHS).filter((p) => !p.endsWith('.json') && !p.endsWith('.log')).map((p) => mkdir(p, { recursive: true })));
   const log = makeLogger();
 
